@@ -3,1070 +3,958 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DIA FrescoDía — Portal B2B Restaurantes</title>
+<title>DIA FrescoDía — Portal B2B</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
-:root {
-  --dia-red: #E2001A;
-  --dia-red-dark: #b8001a;
-  --dia-red-light: #ffeaea;
-  --dia-yellow: #FFD700;
-  --dia-black: #1a1a1a;
-  --dia-gray: #4a4a4a;
-  --dia-gray-light: #f4f4f4;
-  --dia-border: #e0e0e0;
-  --dia-white: #ffffff;
-  --dia-green: #1a7a3c;
-  --dia-green-light: #e8f5ee;
-  --dia-orange: #e85d00;
-  --shadow: 0 2px 12px rgba(0,0,0,0.09);
-  --shadow-lg: 0 6px 28px rgba(0,0,0,0.13);
+:root{
+  --red:#E2001A;--red-dark:#b8001a;--red-light:#ffeaea;
+  --blk:#1a1a1a;--gray:#4a4a4a;--glt:#f4f4f4;--gmd:#e0e0e0;
+  --grn:#1a7a3c;--glt2:#e8f5ee;--org:#e85d00;--ylw:#FFD700;--blu:#e8f0ff;
+  --shd:0 2px 12px rgba(0,0,0,.09);--shd2:0 8px 32px rgba(0,0,0,.15);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Barlow',sans-serif; background:#f0f0f0; color:var(--dia-black); min-height:100vh; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Barlow',sans-serif;background:#ebebeb;color:var(--blk);min-height:100vh;overflow-x:hidden;}
 
-/* ── TOP BAR (DIA style) ── */
-.dia-topbar {
-  background:var(--dia-red);
-  padding:0;
-  display:flex;
-  align-items:stretch;
-  height:54px;
-  position:sticky;
-  top:0;
-  z-index:200;
-  box-shadow:0 2px 8px rgba(226,0,26,0.3);
+/* ── ROLE SELECTOR ─────────────────────────────────── */
+#role-selector{
+  position:fixed;inset:0;z-index:1000;background:var(--blk);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .45s ease,visibility .45s ease;
 }
-.dia-logo-area {
-  background:var(--dia-red-dark);
-  display:flex;
-  align-items:center;
-  padding:0 22px;
-  gap:10px;
-  border-right:1px solid rgba(255,255,255,0.15);
+#role-selector.gone{opacity:0;visibility:hidden;pointer-events:none;}
+.sel-logo{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.sel-dia{background:var(--red);padding:9px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:#fff;border-radius:2px;}
+.sel-brand{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2.1rem;color:#fff;letter-spacing:-.5px;}
+.sel-brand em{color:var(--ylw);font-style:normal;}
+.sel-tag{font-size:.78rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:52px;text-align:center;}
+.sel-q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:center;}
+.role-cards{display:flex;gap:3px;}
+.rcard{
+  width:230px;padding:34px 26px;cursor:pointer;
+  border:2px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  transition:all .2s;text-align:center;position:relative;overflow:hidden;
 }
-.dia-logo-box {
-  background:white;
-  border-radius:4px;
-  padding:4px 10px;
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:900;
-  font-size:1.35rem;
-  color:var(--dia-red);
-  letter-spacing:-0.5px;
-  line-height:1;
-}
-.dia-portal-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:700;
-  font-size:0.85rem;
-  color:rgba(255,255,255,0.85);
-  letter-spacing:0.5px;
-  text-transform:uppercase;
-  line-height:1.2;
-}
-.dia-portal-sub {
-  font-size:0.65rem;
-  color:rgba(255,255,255,0.55);
-  font-weight:400;
-  text-transform:uppercase;
-  letter-spacing:0.3px;
-}
-.dia-nav {
-  display:flex;
-  align-items:stretch;
-  flex:1;
-  padding:0 12px;
-}
-.dia-nav-tab {
-  display:flex;
-  align-items:center;
-  padding:0 16px;
-  font-family:'Barlow',sans-serif;
-  font-size:0.8rem;
-  font-weight:600;
-  color:rgba(255,255,255,0.75);
-  cursor:pointer;
-  border:none;
-  background:transparent;
-  border-bottom:3px solid transparent;
-  transition:all 0.15s;
-  white-space:nowrap;
-  gap:5px;
-}
-.dia-nav-tab:hover { color:white; background:rgba(0,0,0,0.1); }
-.dia-nav-tab.active { color:white; border-bottom-color:white; background:rgba(0,0,0,0.12); }
-.dia-right-area {
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  gap:10px;
-  border-left:1px solid rgba(255,255,255,0.15);
-}
-.role-chip {
-  padding:3px 12px;
-  border-radius:3px;
-  font-size:0.68rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  background:white;
-  color:var(--dia-red);
-}
-.role-chip.gerente { color:var(--dia-black); background:var(--dia-yellow); }
+.rcard:hover{border-color:var(--red);transform:translateY(-4px);background:rgba(255,255,255,.06);}
+.rcard-icon{font-size:2.6rem;display:block;margin-bottom:14px;}
+.rcard-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.25rem;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.rcard-desc{font-size:.76rem;color:rgba(255,255,255,.4);line-height:1.5;}
+.rcard-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red);transform:scaleX(0);transition:transform .2s;transform-origin:left;}
+.rcard:hover .rcard-bar{transform:scaleX(1);}
 
-/* ── SCREENS ── */
-.screen { display:none; padding:28px 32px; max-width:1240px; margin:0 auto; }
-.screen.active { display:block; }
+/* ── APP SHELL ──────────────────────────────────────── */
+#app{opacity:0;transition:opacity .4s ease;pointer-events:none;}
+#app.on{opacity:1;pointer-events:all;}
 
-/* ── DIA PAGE HEADER ── */
-.page-header {
-  background:white;
-  border-left:5px solid var(--dia-red);
-  padding:14px 20px;
-  margin-bottom:22px;
-  box-shadow:var(--shadow);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.page-title {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:800;
-  font-size:1.6rem;
-  color:var(--dia-black);
-  letter-spacing:-0.3px;
-  text-transform:uppercase;
-}
-.page-subtitle { font-size:0.82rem; color:var(--dia-gray); margin-top:1px; }
+/* TOPBAR */
+.tb{background:var(--blk);height:50px;display:flex;align-items:stretch;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.35);}
+.tb-logo{background:var(--red);display:flex;align-items:center;padding:0 15px;gap:9px;border-right:1px solid rgba(255,255,255,.1);flex-shrink:0;}
+.tb-dia{background:#fff;border-radius:2px;padding:3px 8px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:var(--red);}
+.tb-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;color:rgba(255,255,255,.9);}
+/* toggle */
+.tb-tog{display:flex;align-items:center;padding:0 10px;gap:2px;border-right:1px solid rgba(255,255,255,.1);flex-shrink:0;}
+.tog-btn{padding:5px 13px;font-family:'Barlow',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;border:none;transition:all .17s;color:rgba(255,255,255,.45);background:transparent;border-radius:2px;display:flex;align-items:center;gap:4px;}
+.tog-btn.on{background:#fff;color:var(--blk);}
+.tog-btn:not(.on):hover{color:#fff;background:rgba(255,255,255,.08);}
+/* nav */
+.tb-nav{display:flex;align-items:stretch;flex:1;padding:0 6px;overflow-x:auto;}
+.tnav{display:flex;align-items:center;padding:0 13px;font-size:.76rem;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;border:none;background:transparent;font-family:'Barlow',sans-serif;border-bottom:3px solid transparent;white-space:nowrap;gap:4px;transition:all .15s;}
+.tnav:hover{color:#fff;background:rgba(255,255,255,.06);}
+.tnav.on{color:#fff;border-bottom-color:var(--red);background:rgba(255,255,255,.06);}
+.tb-ctx{font-size:.7rem;color:rgba(255,255,255,.28);padding:0 14px;white-space:nowrap;align-self:center;margin-left:auto;flex-shrink:0;}
 
-/* ── PROTO NOTE ── */
-.proto-note {
-  background:var(--dia-black);
-  color:white;
-  padding:8px 16px;
-  font-size:0.76rem;
-  margin-bottom:18px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  border-left:4px solid var(--dia-yellow);
-}
-.proto-note strong { color:var(--dia-yellow); }
+/* ── VIEWS & SCREENS ────────────────────────────────── */
+.view{display:none;}
+.view.on{display:block;}
+.screen{display:none;padding:24px 28px;max-width:1220px;margin:0 auto;animation:fadeUp .28s ease;}
+.screen.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── CARDS ── */
-.card { background:white; border-radius:0; box-shadow:var(--shadow); overflow:hidden; border-top:3px solid var(--dia-red); }
-.card-header { padding:14px 20px; border-bottom:1px solid var(--dia-border); display:flex; align-items:center; justify-content:space-between; background:#fafafa; }
-.card-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.3px; }
-.card-body { padding:20px; }
+/* ── COMMON COMPONENTS ──────────────────────────────── */
+.phdr{background:#fff;border-left:5px solid var(--red);padding:12px 17px;margin-bottom:18px;box-shadow:var(--shd);display:flex;justify-content:space-between;align-items:center;}
+.ptitle{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.45rem;text-transform:uppercase;letter-spacing:-.2px;}
+.psub{font-size:.78rem;color:var(--gray);margin-top:1px;}
+.pnote{background:var(--blk);color:#fff;padding:6px 13px;font-size:.72rem;margin-bottom:14px;display:flex;align-items:center;gap:7px;border-left:4px solid var(--ylw);}
+.pnote strong{color:var(--ylw);}
 
-/* ── URGENCY BADGES ── */
-.urgency { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.3px; border-radius:2px; }
-.urgency-1 { background:var(--dia-red); color:white; }
-.urgency-2 { background:#e85d00; color:white; }
-.urgency-3 { background:#d4a000; color:white; }
-.urgency-4 { background:#2563eb; color:white; }
-.urgency-5 { background:var(--dia-green); color:white; }
+/* card */
+.card{background:#fff;box-shadow:var(--shd);overflow:hidden;border-top:3px solid var(--red);}
+.card-h{padding:11px 17px;border-bottom:1px solid var(--gmd);display:flex;align-items:center;justify-content:space-between;background:#fafafa;}
+.card-t{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.93rem;text-transform:uppercase;}
+.card-b{padding:17px;}
 
-/* ── DIA DEAL CARD ── */
-.deal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:2px; }
-.deal-card {
-  background:white;
-  border:1px solid var(--dia-border);
-  cursor:pointer;
-  transition:all 0.15s;
-  position:relative;
-  overflow:hidden;
-}
-.deal-card:hover { border-color:var(--dia-red); box-shadow:var(--shadow); z-index:1; }
-.deal-card.selected { border-color:var(--dia-red); border-width:2px; box-shadow:0 0 0 2px rgba(226,0,26,0.2); }
-.deal-badge {
-  position:absolute;
-  top:0; left:0;
-  background:var(--dia-red);
-  color:white;
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:800;
-  font-size:0.9rem;
-  padding:4px 10px;
-  letter-spacing:0.3px;
-}
-.deal-img { width:100%; height:130px; display:flex; align-items:center; justify-content:center; font-size:3.2rem; background:var(--dia-gray-light); }
-.deal-body { padding:12px; }
-.deal-cat { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--dia-gray); margin-bottom:4px; }
-.deal-name { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.05rem; line-height:1.2; margin-bottom:2px; }
-.deal-desc { font-size:0.73rem; color:var(--dia-gray); margin-bottom:8px; line-height:1.3; }
-.deal-pricing { display:flex; align-items:baseline; gap:6px; margin-bottom:6px; }
-.precio-oferta { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.25rem; color:var(--dia-red); }
-.precio-original { font-size:0.75rem; color:#aaa; text-decoration:line-through; }
-.precio-unit { font-size:0.72rem; color:var(--dia-gray); }
-.deal-stock { font-size:0.72rem; color:var(--dia-gray); display:flex; align-items:center; gap:4px; }
-.progress-bar { height:4px; background:#eee; margin-top:5px; }
-.progress-fill { height:100%; background:var(--dia-red); }
-.deal-footer { padding:10px 12px; background:#fafafa; border-top:1px solid var(--dia-border); display:flex; align-items:center; justify-content:space-between; }
-.qty-ctrl { display:flex; align-items:center; gap:6px; }
-.qty-btn { width:26px; height:26px; border:1.5px solid var(--dia-red); background:white; color:var(--dia-red); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:700; transition:all 0.12s; border-radius:2px; }
-.qty-btn:hover { background:var(--dia-red); color:white; }
-.qty-val { font-weight:800; font-size:0.95rem; min-width:22px; text-align:center; }
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;font-family:'Barlow',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .14s;border:none;border-radius:2px;}
+.b-red{background:var(--red);color:#fff;} .b-red:hover{background:var(--red-dark);}
+.b-blk{background:var(--blk);color:#fff;} .b-blk:hover{background:#333;}
+.b-out{background:#fff;border:2px solid var(--red);color:var(--red);} .b-out:hover{background:var(--red-light);}
+.b-gray{background:var(--glt);color:var(--blk);border:1px solid var(--gmd);} .b-gray:hover{background:#e5e5e5;}
+.b-grn{background:var(--grn);color:#fff;} .b-grn:hover{background:#155e2e;}
+.b-wa{background:#25D366;color:#fff;} .b-wa:hover{background:#1ebe5c;}
+.b-sm{padding:4px 10px;font-size:.72rem;}
+.b-full{width:100%;justify-content:center;}
 
-/* ── BUTTONS ── */
-.btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; font-family:'Barlow',sans-serif; font-size:0.84rem; font-weight:700; cursor:pointer; transition:all 0.15s; border:none; letter-spacing:0.2px; border-radius:2px; }
-.btn-red { background:var(--dia-red); color:white; }
-.btn-red:hover { background:var(--dia-red-dark); }
-.btn-black { background:var(--dia-black); color:white; }
-.btn-black:hover { background:#333; }
-.btn-outline { background:white; border:2px solid var(--dia-red); color:var(--dia-red); }
-.btn-outline:hover { background:var(--dia-red-light); }
-.btn-gray { background:var(--dia-gray-light); color:var(--dia-black); border:1px solid var(--dia-border); }
-.btn-gray:hover { background:#e8e8e8; }
-.btn-wa { background:#25D366; color:white; }
-.btn-wa:hover { background:#1ebe5c; }
-.btn-sm { padding:5px 12px; font-size:0.75rem; }
-.btn-full { width:100%; justify-content:center; }
+/* form */
+.fg{display:flex;flex-direction:column;gap:3px;}
+.fl{font-size:.68rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;}
+.fi,.fs,.ft{padding:7px 10px;border:1.5px solid var(--gmd);font-family:'Barlow',sans-serif;font-size:.84rem;color:var(--blk);background:#fff;outline:none;transition:border-color .14s;border-radius:0;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(226,0,26,.08);}
+.ft{resize:vertical;min-height:68px;}
+.fhint{font-size:.68rem;color:#aaa;}
+.fgrid{display:grid;gap:11px;} .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:1fr 1fr 1fr;}
 
-/* ── FORM ── */
-.form-group { display:flex; flex-direction:column; gap:4px; }
-.form-label { font-size:0.72rem; font-weight:700; color:var(--dia-gray); text-transform:uppercase; letter-spacing:0.4px; }
-.form-input, .form-select, .form-textarea { padding:9px 12px; border:1.5px solid var(--dia-border); font-family:'Barlow',sans-serif; font-size:0.88rem; color:var(--dia-black); background:white; outline:none; transition:border-color 0.15s; border-radius:0; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--dia-red); box-shadow:0 0 0 3px rgba(226,0,26,0.08); }
-.form-textarea { resize:vertical; min-height:72px; }
-.form-hint { font-size:0.72rem; color:#999; }
-.form-grid { display:grid; gap:14px; }
-.g2 { grid-template-columns:1fr 1fr; }
-.g3 { grid-template-columns:1fr 1fr 1fr; }
+/* table */
+table{width:100%;border-collapse:collapse;}
+th{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);padding:7px 12px;text-align:left;border-bottom:2px solid var(--red);background:var(--glt);}
+td{padding:9px 12px;border-bottom:1px solid var(--gmd);font-size:.8rem;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafafa;}
 
-/* ── FILTER BAR ── */
-.filter-bar { display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
-.filter-chip { padding:5px 14px; font-size:0.76rem; font-weight:700; border:1.5px solid var(--dia-border); background:white; color:var(--dia-gray); cursor:pointer; transition:all 0.12s; border-radius:2px; text-transform:uppercase; letter-spacing:0.3px; }
-.filter-chip:hover, .filter-chip.active { background:var(--dia-red); color:white; border-color:var(--dia-red); }
+/* urgency */
+.u{display:inline-flex;align-items:center;padding:2px 6px;font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;border-radius:2px;}
+.u1{background:var(--red);color:#fff;} .u2{background:#e85d00;color:#fff;}
+.u3{background:#d4a000;color:#fff;} .u4{background:#2563eb;color:#fff;} .u5{background:var(--grn);color:#fff;}
 
-/* ── TABLE ── */
-table { width:100%; border-collapse:collapse; }
-th { font-size:0.7rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--dia-gray); padding:9px 14px; text-align:left; border-bottom:2px solid var(--dia-red); background:var(--dia-gray-light); }
-td { padding:11px 14px; border-bottom:1px solid var(--dia-border); font-size:0.84rem; vertical-align:middle; }
-tr:last-child td { border-bottom:none; }
-tr:hover td { background:#fafafa; }
+/* status pills */
+.sp{padding:2px 8px;font-size:.64rem;font-weight:800;text-transform:uppercase;border-radius:2px;}
+.s-new{background:#e8f0ff;color:#1a3caa;} .s-prep{background:#fff0e0;color:var(--org);}
+.s-ok{background:var(--glt2);color:var(--grn);} .s-done{background:#eee;color:#777;}
+.s-act{background:var(--glt2);color:var(--grn);} .s-pend{background:#fff3d0;color:#7a5200;}
 
-/* ── STATS ── */
-.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-bottom:20px; }
-.stat-card { background:white; padding:16px 18px; border-top:3px solid var(--dia-red); }
-.stat-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--dia-gray); margin-bottom:4px; }
-.stat-value { font-family:'Barlow Condensed',sans-serif; font-size:1.9rem; font-weight:800; line-height:1; }
-.stat-sub { font-size:0.72rem; color:var(--dia-gray); margin-top:3px; }
+/* cat chips */
+.cc{padding:1px 6px;font-size:.61rem;font-weight:800;text-transform:uppercase;border-radius:2px;}
+.c-car{background:#fde8e8;color:#900;} .c-lac{background:var(--blu);color:#1a3caa;}
+.c-fv{background:var(--glt2);color:var(--grn);} .c-pan{background:#fff3d0;color:#7a5200;}
+.c-fia{background:#f5e8ff;color:#6a22aa;}
 
-/* ── SPLIT LAYOUT ── */
-.layout-split { display:grid; grid-template-columns:1fr 300px; gap:16px; align-items:start; }
+/* alerts */
+.al{padding:9px 12px;font-size:.78rem;display:flex;gap:8px;margin-bottom:12px;border-left:4px solid;}
+.a-red{background:var(--red-light);color:var(--red-dark);border-color:var(--red);}
+.a-grn{background:var(--glt2);color:var(--grn);border-color:var(--grn);}
+.a-ylw{background:#fffbdb;color:#7a5200;border-color:#d4a000;}
+.a-inf{background:var(--blu);color:#1a3caa;border-color:#2563eb;}
 
-/* ── CARRITO ── */
-.carrito-panel { background:white; border-top:3px solid var(--dia-red); padding:18px; position:sticky; top:62px; box-shadow:var(--shadow); }
-.carrito-titulo { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.05rem; text-transform:uppercase; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
-.carrito-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--dia-border); font-size:0.82rem; gap:6px; }
-.carrito-item:last-of-type { border-bottom:none; }
-.divider { height:1px; background:var(--dia-border); margin:14px 0; }
-.total-row { display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; margin-bottom:4px; }
-.total-final { display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:2px solid var(--dia-black); }
-.total-label { font-weight:700; font-size:0.9rem; text-transform:uppercase; }
-.total-valor { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.4rem; color:var(--dia-red); }
-.ahorro-pill { background:var(--dia-red); color:white; font-size:0.72rem; font-weight:700; padding:3px 10px; text-align:center; margin-top:6px; border-radius:2px; }
+/* filter chips */
+.fbar{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.fc{padding:4px 12px;font-size:.71rem;font-weight:700;border:1.5px solid var(--gmd);background:#fff;color:var(--gray);cursor:pointer;transition:all .12s;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;}
+.fc:hover,.fc.on{background:var(--red);color:#fff;border-color:var(--red);}
 
-/* ── STATUS ── */
-.s-pill { padding:3px 10px; font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.3px; border-radius:2px; }
-.s-nuevo { background:#e8f0ff; color:#1a3caa; }
-.s-confirmado { background:#fff3d0; color:#7a5200; }
-.s-preparando { background:#fff0e0; color:var(--dia-orange); }
-.s-listo { background:var(--dia-green-light); color:var(--dia-green); }
-.s-entregado { background:#eee; color:#777; }
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:16px;}
+.stat{background:#fff;padding:14px 16px;border-top:3px solid var(--red);}
+.sl{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:2px;}
+.sv{font-family:'Barlow Condensed',sans-serif;font-size:1.75rem;font-weight:800;line-height:1;}
+.ss{font-size:.68rem;color:var(--gray);margin-top:2px;}
 
-/* ── FULFILLMENT ── */
-.fulfillment-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
-.fulfillment-opt { border:2px solid var(--dia-border); padding:14px; cursor:pointer; transition:all 0.14s; text-align:center; }
-.fulfillment-opt:hover { border-color:var(--dia-red); }
-.fulfillment-opt.selected { border-color:var(--dia-red); background:var(--dia-red-light); }
-.fulfillment-opt .ficon { font-size:1.5rem; display:block; margin-bottom:4px; }
-.fulfillment-opt .flabel { font-weight:700; font-size:0.84rem; }
-.fulfillment-opt .fsub { font-size:0.7rem; color:var(--dia-gray); }
+/* split layout */
+.split{display:grid;grid-template-columns:1fr 280px;gap:13px;align-items:start;}
 
-/* ── MODAL ── */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500; align-items:center; justify-content:center; padding:16px; }
-.modal-overlay.open { display:flex; }
-.modal { background:white; max-width:640px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:var(--shadow-lg); animation:slideUp 0.22s ease; border-top:5px solid var(--dia-red); }
-@keyframes slideUp { from{transform:translateY(18px);opacity:0} to{transform:translateY(0);opacity:1} }
-.modal-header { background:var(--dia-black); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; }
-.modal-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.2rem; color:white; text-transform:uppercase; letter-spacing:0.3px; }
-.modal-close { background:none; border:none; color:white; font-size:1.3rem; cursor:pointer; opacity:0.7; }
-.modal-close:hover { opacity:1; }
-.modal-body { padding:22px; }
-.modal-step { display:none; }
-.modal-step.active { display:block; }
+/* cart */
+.cart{background:#fff;border-top:3px solid var(--red);padding:15px;position:sticky;top:58px;box-shadow:var(--shd);}
+.cart-t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.97rem;text-transform:uppercase;margin-bottom:11px;display:flex;justify-content:space-between;}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--gmd);font-size:.78rem;}
+.ci:last-of-type{border-bottom:none;}
+.ctot{margin-top:9px;padding-top:9px;border-top:2px solid var(--blk);display:flex;justify-content:space-between;align-items:center;}
+.cv{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;color:var(--red);}
+.sav{background:var(--red);color:#fff;font-size:.68rem;font-weight:700;padding:2px 9px;text-align:center;margin-top:4px;border-radius:2px;}
+.hr{height:1px;background:var(--gmd);margin:11px 0;}
 
-/* ── WA PHONE MOCKUP ── */
-.wa-phone {
-  background:#111;
-  border-radius:28px;
-  padding:12px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.3);
-  max-width:280px;
-  margin:0 auto;
-}
-.wa-screen {
-  background:#e5ddd5;
-  border-radius:20px;
-  overflow:hidden;
-  background-image:url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bfb5a5' fill-opacity='0.25'%3E%3Cpath d='M0 0h15v15H0zM15 15h15v15H15z'/%3E%3C/g%3E%3C/svg%3E");
-}
-.wa-topbar-mock {
-  background:#075e54;
-  padding:10px 14px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.wa-avatar { width:34px; height:34px; border-radius:50%; background:#25D366; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-.wa-contact-name { font-size:0.8rem; font-weight:700; color:white; }
-.wa-contact-sub { font-size:0.65rem; color:rgba(255,255,255,0.7); }
-.wa-messages { padding:10px 10px 14px; min-height:180px; display:flex; flex-direction:column; gap:8px; }
-.wa-bubble-in {
-  background:white;
-  border-radius:0 10px 10px 10px;
-  padding:8px 10px;
-  max-width:88%;
-  box-shadow:0 1px 2px rgba(0,0,0,0.1);
-  align-self:flex-start;
-  position:relative;
-}
-.wa-bubble-out {
-  background:#dcf8c6;
-  border-radius:10px 0 10px 10px;
-  padding:8px 10px;
-  max-width:88%;
-  box-shadow:0 1px 2px rgba(0,0,0,0.1);
-  align-self:flex-end;
-}
-.wa-text { font-size:0.75rem; line-height:1.45; color:#111; white-space:pre-wrap; }
-.wa-time { font-size:0.6rem; color:#aaa; text-align:right; margin-top:3px; }
-.wa-date-sep { text-align:center; font-size:0.62rem; background:rgba(0,0,0,0.12); color:#555; padding:3px 10px; border-radius:10px; margin:4px auto; }
+/* deal grid */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:2px;}
+.dc{background:#fff;border:1px solid var(--gmd);cursor:pointer;transition:all .14s;position:relative;overflow:hidden;}
+.dc:hover{border-color:var(--red);box-shadow:var(--shd);z-index:1;}
+.dc.sel{border-color:var(--red);border-width:2px;box-shadow:0 0 0 2px rgba(226,0,26,.2);}
+.dbadge{position:absolute;top:0;left:0;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.85rem;padding:3px 8px;}
+.dimg{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--glt);}
+.dbody{padding:10px;}
+.dcat{font-size:.61rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:2px;}
+.dname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.97rem;line-height:1.2;margin-bottom:2px;}
+.ddesc{font-size:.7rem;color:var(--gray);margin-bottom:6px;line-height:1.3;}
+.dprice{display:flex;align-items:baseline;gap:5px;margin-bottom:4px;}
+.dpo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;color:var(--red);}
+.dpl{font-size:.7rem;color:#aaa;text-decoration:line-through;}
+.pbar{height:4px;background:#eee;margin-top:3px;}
+.pfill{height:100%;background:var(--red);}
+.dfoot{padding:8px 10px;background:var(--glt);border-top:1px solid var(--gmd);display:flex;align-items:center;justify-content:space-between;}
+.qc{display:flex;align-items:center;gap:5px;}
+.qb{width:23px;height:23px;border:1.5px solid var(--red);background:#fff;color:var(--red);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .12s;border-radius:2px;}
+.qb:hover{background:var(--red);color:#fff;}
+.qv{font-weight:800;font-size:.88rem;min-width:18px;text-align:center;}
 
-/* ── TABS (dentro de modales) ── */
-.inner-tabs { display:flex; border-bottom:2px solid var(--dia-border); margin-bottom:18px; }
-.inner-tab { padding:9px 18px; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; color:var(--dia-gray); transition:all 0.12s; }
-.inner-tab:hover { color:var(--dia-black); }
-.inner-tab.active { color:var(--dia-red); border-bottom-color:var(--dia-red); }
-.inner-pane { display:none; }
-.inner-pane.active { display:block; }
+/* fulfillment */
+.ffg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;}
+.ffo{border:2px solid var(--gmd);padding:11px;cursor:pointer;transition:all .13s;text-align:center;}
+.ffo:hover{border-color:var(--red);}
+.ffo.on{border-color:var(--red);background:var(--red-light);}
+.ffi{font-size:1.3rem;display:block;margin-bottom:3px;}
+.ffl{font-weight:700;font-size:.8rem;}
+.ffs{font-size:.67rem;color:var(--gray);}
 
-/* ── EMAIL PREVIEW ── */
-.email-preview { border:1px solid var(--dia-border); }
-.email-header-strip { background:var(--dia-gray-light); padding:10px 14px; border-bottom:1px solid var(--dia-border); font-size:0.78rem; line-height:1.7; }
-.email-body-strip { padding:14px; font-size:0.8rem; line-height:1.6; color:var(--dia-gray); }
+/* reg steps */
+.rsteps{display:flex;margin-bottom:20px;}
+.rs{flex:1;padding:8px;text-align:center;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;background:#fff;color:#bbb;border-bottom:3px solid var(--gmd);}
+.rs.done{color:var(--grn);border-bottom-color:var(--grn);}
+.rs.cur{color:var(--red);border-bottom-color:var(--red);}
+.rsn{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;display:block;}
 
-/* ── REGISTRATION STEPS ── */
-.reg-steps { display:flex; margin-bottom:26px; }
-.reg-step { flex:1; padding:10px; text-align:center; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; background:white; color:#bbb; border-bottom:3px solid var(--dia-border); }
-.reg-step.done { color:var(--dia-green); border-bottom-color:var(--dia-green); }
-.reg-step.current { color:var(--dia-red); border-bottom-color:var(--dia-red); }
-.reg-step-num { font-family:'Barlow Condensed',sans-serif; font-size:1.2rem; font-weight:800; display:block; }
+/* dto auto */
+.da{background:var(--glt2);border:1.5px dashed var(--grn);padding:4px 8px;font-size:.73rem;color:var(--grn);font-weight:700;display:flex;align-items:center;gap:3px;}
 
-/* ── ALERT ── */
-.alert { padding:11px 14px; font-size:0.82rem; display:flex; gap:10px; margin-bottom:14px; border-left:4px solid; }
-.alert-red { background:var(--dia-red-light); color:var(--dia-red-dark); border-color:var(--dia-red); }
-.alert-green { background:var(--dia-green-light); color:var(--dia-green); border-color:var(--dia-green); }
-.alert-yellow { background:#fffbdb; color:#7a5200; border-color:#d4a000; }
-.alert-info { background:#e8f0ff; color:#1a3caa; border-color:#2563eb; }
+/* inv widget */
+.iw{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:16px;}
+.ic{background:#fff;padding:13px 15px;border-top:3px solid var(--gmd);text-align:center;}
+.ic.r{border-top-color:var(--red);} .ic.g{border-top-color:var(--grn);} .ic.o{border-top-color:var(--org);}
+.iv{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:800;}
+.il{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray);margin-top:1px;}
+.is{font-size:.68rem;color:var(--gray);}
 
-/* ── DESCUENTO AUTO ── */
-.descuento-auto { background:var(--dia-green-light); border:1.5px dashed var(--dia-green); padding:6px 10px; font-size:0.78rem; color:var(--dia-green); font-weight:700; display:flex; align-items:center; gap:5px; }
+/* modal */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;padding:14px;}
+.mo.on{display:flex;}
+.mdl{background:#fff;max-width:600px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:var(--shd2);animation:fadeUp .2s ease;border-top:5px solid var(--red);}
+.mh{background:var(--blk);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;}
+.mt{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;text-transform:uppercase;}
+.mx{background:none;border:none;color:#fff;font-size:1.15rem;cursor:pointer;opacity:.65;}
+.mx:hover{opacity:1;}
+.mb{padding:18px;}
+.mstep{display:none;} .mstep.on{display:block;}
 
-/* ── PROCESSING ── */
-.processing-wrap { text-align:center; padding:40px 20px; }
-.spinner { width:44px; height:44px; border:4px solid var(--dia-border); border-top-color:var(--dia-red); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
-@keyframes spin { to { transform:rotate(360deg); } }
+/* inner tabs */
+.itabs{display:flex;border-bottom:2px solid var(--gmd);margin-bottom:14px;}
+.itab{padding:7px 14px;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--gray);transition:all .12s;}
+.itab:hover{color:var(--blk);}
+.itab.on{color:var(--red);border-bottom-color:var(--red);}
+.ipane{display:none;} .ipane.on{display:block;}
 
-/* ── CAT CHIPS ── */
-.cat-chip { padding:2px 8px; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.3px; border-radius:2px; }
-.c-carne { background:#fde8e8; color:#900; }
-.c-lacteos { background:#e8f0ff; color:#1a3caa; }
-.c-fv { background:var(--dia-green-light); color:var(--dia-green); }
-.c-pan { background:#fff3d0; color:#7a5200; }
-.c-fiam { background:#f5e8ff; color:#6a22aa; }
+/* whatsapp phone */
+.wap{background:#111;border-radius:24px;padding:9px;box-shadow:0 8px 30px rgba(0,0,0,.35);max-width:260px;margin:0 auto;}
+.was{background:#e5ddd5;border-radius:17px;overflow:hidden;background-image:url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bfb5a5' fill-opacity='0.2'%3E%3Cpath d='M0 0h15v15H0zM15 15h15v15H15z'/%3E%3C/g%3E%3C/svg%3E");}
+.watb{background:#075e54;padding:8px 11px;display:flex;align-items:center;gap:8px;}
+.waav{width:30px;height:30px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.wan{font-size:.73rem;font-weight:700;color:#fff;}
+.was2{font-size:.6rem;color:rgba(255,255,255,.65);}
+.wams{padding:8px 8px 11px;min-height:140px;display:flex;flex-direction:column;gap:6px;}
+.wab{background:#fff;border-radius:0 9px 9px 9px;padding:6px 8px;max-width:90%;box-shadow:0 1px 2px rgba(0,0,0,.1);align-self:flex-start;}
+.wabo{background:#dcf8c6;border-radius:9px 0 9px 9px;padding:6px 8px;max-width:90%;box-shadow:0 1px 2px rgba(0,0,0,.1);align-self:flex-end;}
+.watxt{font-size:.7rem;line-height:1.4;color:#111;white-space:pre-wrap;}
+.watm{font-size:.57rem;color:#aaa;text-align:right;margin-top:2px;}
+.wads{text-align:center;font-size:.59rem;background:rgba(0,0,0,.1);color:#555;padding:2px 8px;border-radius:9px;margin:2px auto;}
+
+/* email preview */
+.ep{border:1px solid var(--gmd);}
+.eph{background:var(--glt);padding:8px 12px;border-bottom:1px solid var(--gmd);font-size:.74rem;line-height:1.65;}
+.epb{padding:12px;font-size:.77rem;line-height:1.6;color:var(--gray);}
+
+/* spinner */
+.spin{width:38px;height:38px;border:4px solid var(--gmd);border-top-color:var(--red);border-radius:50%;animation:rot .8s linear infinite;margin:0 auto 12px;}
+@keyframes rot{to{transform:rotate(360deg);}}
 
 @media(max-width:768px){
-  .layout-split{grid-template-columns:1fr}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .g2,.g3{grid-template-columns:1fr}
-  .deal-grid{grid-template-columns:1fr 1fr}
-  .screen{padding:16px}
+  .split{grid-template-columns:1fr;}
+  .stats{grid-template-columns:1fr 1fr;}
+  .g2,.g3{grid-template-columns:1fr;}
+  .dgrid{grid-template-columns:1fr 1fr;}
+  .iw{grid-template-columns:1fr 1fr;}
+  .screen{padding:12px;}
+  .role-cards{flex-direction:column;}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ TOP BAR ════════════════════════════════════════ -->
-<nav class="dia-topbar">
-  <div class="dia-logo-area">
-    <div class="dia-logo-box">DIA</div>
-    <div>
-      <div class="dia-portal-label">FrescoDía</div>
-      <div class="dia-portal-sub">Portal B2B Restaurantes</div>
-    </div>
+<!-- ROLE SELECTOR -->
+<div id="role-selector">
+  <div class="sel-logo">
+    <div class="sel-dia">DIA</div>
+    <div class="sel-brand">Fresco<em>Día</em></div>
   </div>
-  <div class="dia-nav">
-    <button class="dia-nav-tab active" onclick="showScreen('ofertas')">🏪 Ofertas del Día</button>
-    <button class="dia-nav-tab" onclick="showScreen('pedido')">🛒 Mi Pedido</button>
-    <button class="dia-nav-tab" onclick="showScreen('gerente')">📦 Carga Diaria</button>
-    <button class="dia-nav-tab" onclick="showScreen('ordenes')">📋 Órdenes</button>
-    <button class="dia-nav-tab" onclick="showScreen('whatsapp')">💬 WhatsApp</button>
-    <button class="dia-nav-tab" onclick="showScreen('registro')">✍️ Registro</button>
-  </div>
-  <div class="dia-right-area">
-    <span id="role-badge" class="role-chip">Restaurante</span>
-  </div>
-</nav>
-
-<!-- ═══ SCREEN: OFERTAS ════════════════════════════════ -->
-<div id="screen-ofertas" class="screen active">
-  <div class="proto-note">🔬 <span><strong>Vista Restaurante.</strong> Seleccioná productos y ajustá cantidad con +/−. Luego ir a "Mi Pedido" para confirmar.</span></div>
-
-  <div class="page-header">
-    <div>
-      <div class="page-title">Ofertas FrescoDía — Hoy</div>
-      <div class="page-subtitle">Sucursal Palermo · Actualizado 08:14 hs · <strong style="color:var(--dia-red)">43 productos disponibles</strong></div>
+  <div class="sel-tag">Portal B2B · Productos por Vencer</div>
+  <div class="sel-q">¿Con qué perfil querés ingresar?</div>
+  <div class="role-cards">
+    <div class="rcard" onclick="enterApp('r')">
+      <span class="rcard-icon">🍽️</span>
+      <div class="rcard-name">Restaurante</div>
+      <div class="rcard-desc">Ver las ofertas del día, hacer pedidos y registrar tu negocio</div>
+      <div class="rcard-bar"></div>
     </div>
-    <select class="form-select" style="width:auto;">
-      <option>Mayor descuento</option><option>Vence antes</option><option>Por categoría</option>
-    </select>
-  </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
-    <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;color:var(--dia-gray);letter-spacing:0.4px;">Vence en:</span>
-    <span class="urgency urgency-1">1 día</span>
-    <span class="urgency urgency-2">2 días</span>
-    <span class="urgency urgency-3">3 días</span>
-    <span class="urgency urgency-4">4 días</span>
-    <span class="urgency urgency-5">5 días</span>
-  </div>
-
-  <div class="filter-bar">
-    <button class="filter-chip active">Todos</button>
-    <button class="filter-chip">🥩 Carnes</button>
-    <button class="filter-chip">🧀 Lácteos</button>
-    <button class="filter-chip">🥦 Frutas y Verduras</button>
-    <button class="filter-chip">🥐 Panadería</button>
-    <button class="filter-chip">🍖 Fiambrería</button>
-    <input class="form-input" placeholder="🔍 Buscar producto…" style="margin-left:auto;width:200px;padding:5px 12px;font-size:0.8rem;">
-  </div>
-
-  <div class="deal-grid">
-    <!-- Card 1 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−40%</div>
-      <div class="deal-img" style="background:#fdecea;">🥩</div>
-      <div class="deal-body">
-        <div class="deal-cat">Carnes <span class="urgency urgency-1" style="float:right;">1 día</span></div>
-        <div class="deal-name">Asado de Tira</div>
-        <div class="deal-desc">Calidad premium · por kg</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$2.280</span>
-          <span class="precio-original">$3.800</span>
-        </div>
-        <div class="deal-stock">📦 18 kg disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:45%"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl">
-          <button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button>
-        </div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">kg</span>
-      </div>
+    <div class="rcard" onclick="enterApp('t')">
+      <span class="rcard-icon">🏪</span>
+      <div class="rcard-name">Tienda DIA</div>
+      <div class="rcard-desc">Cargar inventario, gestionar clientes, órdenes y comunicaciones</div>
+      <div class="rcard-bar"></div>
     </div>
-
-    <!-- Card 2 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−25%</div>
-      <div class="deal-img" style="background:#e8f0ff;">🧀</div>
-      <div class="deal-body">
-        <div class="deal-cat">Lácteos <span class="urgency urgency-2" style="float:right;">2 días</span></div>
-        <div class="deal-name">Queso Barra Cremoso</div>
-        <div class="deal-desc">La Paulina · horma 3 kg</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$6.150</span>
-          <span class="precio-original">$8.200</span>
-        </div>
-        <div class="deal-stock">📦 6 hormas disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:17%;background:var(--dia-orange);"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl"><button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button></div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">hormas</span>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−30%</div>
-      <div class="deal-img" style="background:#e8f5ee;">🥦</div>
-      <div class="deal-body">
-        <div class="deal-cat">Frutas y Verd. <span class="urgency urgency-3" style="float:right;">3 días</span></div>
-        <div class="deal-name">Brócoli</div>
-        <div class="deal-desc">⚠️ Manchas menores — apto cocción</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$840</span>
-          <span class="precio-original">$1.200</span>
-        </div>
-        <div class="deal-stock">📦 22 kg disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:60%"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl"><button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button></div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">kg</span>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−50%</div>
-      <div class="deal-img" style="background:#fff3d0;">🥐</div>
-      <div class="deal-body">
-        <div class="deal-cat">Panadería <span class="urgency urgency-1" style="float:right;">1 día</span></div>
-        <div class="deal-name">Medialunas de Grasa</div>
-        <div class="deal-desc">Bandeja x 12 unidades</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$1.200</span>
-          <span class="precio-original">$2.400</span>
-        </div>
-        <div class="deal-stock">📦 8 bandejas disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:25%;background:#d4a000;"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl"><button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button></div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">bandejas</span>
-      </div>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−15%</div>
-      <div class="deal-img" style="background:#f5e8ff;">🍖</div>
-      <div class="deal-body">
-        <div class="deal-cat">Fiambrería <span class="urgency urgency-4" style="float:right;">4 días</span></div>
-        <div class="deal-name">Jamón Cocido Loncheado</div>
-        <div class="deal-desc">Swift · paquete 200g</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$1.572</span>
-          <span class="precio-original">$1.850</span>
-        </div>
-        <div class="deal-stock">📦 30 pqt disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:10%"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl"><button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button></div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">paquetes</span>
-      </div>
-    </div>
-
-    <!-- Card 6 -->
-    <div class="deal-card" onclick="toggleSelect(this)">
-      <div class="deal-badge">−35%</div>
-      <div class="deal-img" style="background:#fdecea;">🍎</div>
-      <div class="deal-body">
-        <div class="deal-cat">Frutas y Verd. <span class="urgency urgency-2" style="float:right;">2 días</span></div>
-        <div class="deal-name">Manzanas Red Delicious</div>
-        <div class="deal-desc">⚠️ Golpes menores — limpiar antes de uso</div>
-        <div class="deal-pricing">
-          <span class="precio-oferta">$617</span>
-          <span class="precio-original">$950</span>
-        </div>
-        <div class="deal-stock">📦 15 kg disp.
-          <div class="progress-bar" style="flex:1;margin-left:6px;"><div class="progress-fill" style="width:33%;background:var(--dia-orange);"></div></div>
-        </div>
-      </div>
-      <div class="deal-footer">
-        <div class="qty-ctrl"><button class="qty-btn">−</button><span class="qty-val">0</span><button class="qty-btn">+</button></div>
-        <span style="font-size:0.7rem;color:var(--dia-gray);">kg</span>
-      </div>
-    </div>
-  </div>
-
-  <div style="margin-top:20px;display:flex;justify-content:flex-end;">
-    <button class="btn btn-red" style="font-size:0.95rem;padding:12px 28px;" onclick="showScreen('pedido')">Ver carrito y confirmar →</button>
   </div>
 </div>
 
-<!-- ═══ SCREEN: PEDIDO ═════════════════════════════════ -->
-<div id="screen-pedido" class="screen">
-  <div class="proto-note">🔬 <span><strong>Confirmación de pedido.</strong> Al confirmar se genera el PDF y se simulan los envíos.</span></div>
-  <div class="page-header">
-    <div><div class="page-title">Confirmar Pedido</div><div class="page-subtitle">La Brasería del Centro · Hoy, 10:32 hs</div></div>
-    <button class="btn btn-outline btn-sm" onclick="showScreen('ofertas')">← Volver a ofertas</button>
-  </div>
+<!-- APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <nav class="tb">
+    <div class="tb-logo">
+      <div class="tb-dia">DIA</div>
+      <div class="tb-name">FrescoDía</div>
+    </div>
+    <div class="tb-tog">
+      <button class="tog-btn on" id="tog-r" onclick="switchRole('r')">🍽️ Restaurante</button>
+      <button class="tog-btn"    id="tog-t" onclick="switchRole('t')">🏪 Tienda</button>
+    </div>
+    <div class="tb-nav" id="tb-nav"></div>
+    <div class="tb-ctx" id="tb-ctx">DIA Palermo</div>
+  </nav>
 
-  <div class="layout-split">
-    <div>
-      <div class="card" style="margin-bottom:14px;">
-        <div class="card-header"><div class="card-title">Productos seleccionados</div></div>
-        <div class="card-body" style="padding:0;">
-          <table>
-            <thead><tr><th>Producto</th><th>Vence en</th><th>Cant.</th><th>P. Oferta</th><th>Subtotal</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Asado de Tira</strong><br><span class="cat-chip c-carne">Carnes</span></td><td><span class="urgency urgency-1">1 día</span></td><td>4 kg</td><td>$2.280/kg</td><td><strong>$9.120</strong></td></tr>
-              <tr><td><strong>Queso Barra Cremoso</strong><br><span class="cat-chip c-lacteos">Lácteos</span></td><td><span class="urgency urgency-2">2 días</span></td><td>1 horma</td><td>$6.150</td><td><strong>$6.150</strong></td></tr>
-              <tr><td><strong>Brócoli</strong><br><span style="font-size:0.72rem;color:var(--dia-gray);">⚠️ manchas</span></td><td><span class="urgency urgency-3">3 días</span></td><td>5 kg</td><td>$840/kg</td><td><strong>$4.200</strong></td></tr>
-              <tr><td><strong>Medialunas de Grasa</strong><br><span class="cat-chip c-pan">Panadería</span></td><td><span class="urgency urgency-1">1 día</span></td><td>2 bandejas</td><td>$1.200</td><td><strong>$2.400</strong></td></tr>
-            </tbody>
-          </table>
+  <!-- ════════════ RESTAURANTE VIEW ════════════ -->
+  <div id="vr" class="view on">
+
+    <!-- R1: OFERTAS -->
+    <div id="r1" class="screen on">
+      <div class="pnote">🔬 <strong>Vista Restaurante — Ofertas del Día.</strong> Seleccioná productos, ajustá cantidades y confirmá en "Mi Pedido".</div>
+      <div class="phdr">
+        <div>
+          <div class="ptitle">Ofertas de Hoy</div>
+          <div class="psub">DIA Palermo · 08:14 hs · <strong style="color:var(--red)">43 productos disponibles</strong></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:.74rem;color:var(--gray);">Ordenar:</span>
+          <select class="fs" id="sort-sel" style="width:auto;padding:5px 9px;" onchange="applyFilters()">
+            <option value="dto">Mayor descuento</option>
+            <option value="vto">Vence antes</option>
+            <option value="cat">Por categoría</option>
+          </select>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:14px;">
-        <div class="card-header"><div class="card-title">Forma de recepción</div></div>
-        <div class="card-body">
-          <div class="fulfillment-grid">
-            <div class="fulfillment-opt selected" onclick="selectFulfillment(this)">
-              <span class="ficon">🚚</span><div class="flabel">Delivery</div><div class="fsub">El super lo lleva (cargo extra)</div>
-            </div>
-            <div class="fulfillment-opt" onclick="selectFulfillment(this)">
-              <span class="ficon">🏪</span><div class="flabel">Retiro en sucursal</div><div class="fsub">Sin costo adicional</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;align-items:center;">
+        <span style="font-size:.66rem;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:.4px;">Urgencia:</span>
+        <span class="u u1">1 día</span><span class="u u2">2 días</span>
+        <span class="u u3">3 días</span><span class="u u4">4 días</span><span class="u u5">5 días</span>
+      </div>
+
+      <div class="fbar" id="catbar">
+        <button class="fc on"  data-cat="all"  onclick="setCat(this)">Todos</button>
+        <button class="fc"     data-cat="car"  onclick="setCat(this)">🥩 Carnes</button>
+        <button class="fc"     data-cat="lac"  onclick="setCat(this)">🧀 Lácteos</button>
+        <button class="fc"     data-cat="fv"   onclick="setCat(this)">🥦 Frutas y Verduras</button>
+        <button class="fc"     data-cat="pan"  onclick="setCat(this)">🥐 Panadería</button>
+        <button class="fc"     data-cat="fia"  onclick="setCat(this)">🍖 Fiambrería</button>
+        <input class="fi" id="srch" placeholder="🔍 Buscar…" style="margin-left:auto;width:180px;padding:4px 10px;font-size:.77rem;" oninput="applyFilters()">
+      </div>
+
+      <div class="dgrid" id="dgrid">
+        <!-- CARDS -->
+        <div class="dc" onclick="toggleSel(this)" data-cat="car" data-d="40" data-v="1" data-n="asado de tira">
+          <div class="dbadge">−40%</div>
+          <div class="dimg" style="background:#fdecea;">🥩</div>
+          <div class="dbody">
+            <div class="dcat">Carnes <span class="u u1" style="float:right">1 día</span></div>
+            <div class="dname">Asado de Tira</div>
+            <div class="ddesc">Calidad premium · por kg</div>
+            <div class="dprice"><span class="dpo">$2.280</span><span class="dpl">$3.800</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 18 kg disp.</div>
+            <div class="pbar"><div class="pfill" style="width:45%"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">kg</span></div>
+        </div>
+
+        <div class="dc" onclick="toggleSel(this)" data-cat="lac" data-d="25" data-v="2" data-n="queso barra cremoso">
+          <div class="dbadge">−25%</div>
+          <div class="dimg" style="background:#e8f0ff;">🧀</div>
+          <div class="dbody">
+            <div class="dcat">Lácteos <span class="u u2" style="float:right">2 días</span></div>
+            <div class="dname">Queso Barra Cremoso</div>
+            <div class="ddesc">La Paulina · horma 3 kg</div>
+            <div class="dprice"><span class="dpo">$6.150</span><span class="dpl">$8.200</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 6 hormas disp.</div>
+            <div class="pbar"><div class="pfill" style="width:17%;background:var(--org)"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">hormas</span></div>
+        </div>
+
+        <div class="dc" onclick="toggleSel(this)" data-cat="fv" data-d="30" data-v="3" data-n="brocoli">
+          <div class="dbadge">−30%</div>
+          <div class="dimg" style="background:#e8f5ee;">🥦</div>
+          <div class="dbody">
+            <div class="dcat">Frutas y Verd. <span class="u u3" style="float:right">3 días</span></div>
+            <div class="dname">Brócoli</div>
+            <div class="ddesc">⚠️ Manchas menores — apto cocción</div>
+            <div class="dprice"><span class="dpo">$840</span><span class="dpl">$1.200</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 22 kg disp.</div>
+            <div class="pbar"><div class="pfill" style="width:60%"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">kg</span></div>
+        </div>
+
+        <div class="dc" onclick="toggleSel(this)" data-cat="pan" data-d="50" data-v="1" data-n="medialunas de grasa">
+          <div class="dbadge">−50%</div>
+          <div class="dimg" style="background:#fff3d0;">🥐</div>
+          <div class="dbody">
+            <div class="dcat">Panadería <span class="u u1" style="float:right">1 día</span></div>
+            <div class="dname">Medialunas de Grasa</div>
+            <div class="ddesc">Bandeja × 12 unidades</div>
+            <div class="dprice"><span class="dpo">$1.200</span><span class="dpl">$2.400</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 8 bandejas disp.</div>
+            <div class="pbar"><div class="pfill" style="width:25%;background:#d4a000"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">bandejas</span></div>
+        </div>
+
+        <div class="dc" onclick="toggleSel(this)" data-cat="fia" data-d="15" data-v="4" data-n="jamon cocido loncheado">
+          <div class="dbadge">−15%</div>
+          <div class="dimg" style="background:#f5e8ff;">🍖</div>
+          <div class="dbody">
+            <div class="dcat">Fiambrería <span class="u u4" style="float:right">4 días</span></div>
+            <div class="dname">Jamón Cocido Loncheado</div>
+            <div class="ddesc">Swift · paquete 200g</div>
+            <div class="dprice"><span class="dpo">$1.572</span><span class="dpl">$1.850</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 30 pqt disp.</div>
+            <div class="pbar"><div class="pfill" style="width:10%"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">paquetes</span></div>
+        </div>
+
+        <div class="dc" onclick="toggleSel(this)" data-cat="fv" data-d="35" data-v="2" data-n="manzanas red delicious">
+          <div class="dbadge">−35%</div>
+          <div class="dimg" style="background:#fdecea;">🍎</div>
+          <div class="dbody">
+            <div class="dcat">Frutas y Verd. <span class="u u2" style="float:right">2 días</span></div>
+            <div class="dname">Manzanas Red Delicious</div>
+            <div class="ddesc">⚠️ Golpes menores — limpiar antes de uso</div>
+            <div class="dprice"><span class="dpo">$617</span><span class="dpl">$950</span></div>
+            <div style="font-size:.68rem;color:var(--gray)">📦 15 kg disp.</div>
+            <div class="pbar"><div class="pfill" style="width:33%;background:var(--org)"></div></div>
+          </div>
+          <div class="dfoot"><div class="qc"><button class="qb">−</button><span class="qv">0</span><button class="qb">+</button></div><span style="font-size:.67rem;color:var(--gray)">kg</span></div>
+        </div>
+      </div><!-- /dgrid -->
+
+      <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+        <button class="btn b-red" style="font-size:.9rem;padding:10px 24px;" onclick="rgo('r2')">Ver carrito y confirmar →</button>
+      </div>
+    </div><!-- /r1 -->
+
+    <!-- R2: MI PEDIDO -->
+    <div id="r2" class="screen">
+      <div class="pnote">🔬 <strong>Mi Pedido.</strong> Revisá el resumen, elegí la modalidad de entrega y confirmá.</div>
+      <div class="phdr">
+        <div><div class="ptitle">Confirmar Pedido</div><div class="psub">La Brasería del Centro · Hoy 10:32 hs</div></div>
+        <button class="btn b-out b-sm" onclick="rgo('r1')">← Modificar</button>
+      </div>
+      <div class="split">
+        <div>
+          <div class="card" style="margin-bottom:11px;">
+            <div class="card-h"><div class="card-t">Productos seleccionados</div></div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead><tr><th>Producto</th><th>Vence</th><th>Cant.</th><th>P. Oferta</th><th>Subtotal</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Asado de Tira</strong><br><span class="cc c-car">Carnes</span></td><td><span class="u u1">1 día</span></td><td>4 kg</td><td>$2.280/kg</td><td><strong>$9.120</strong></td></tr>
+                  <tr><td><strong>Queso Barra Cremoso</strong><br><span class="cc c-lac">Lácteos</span></td><td><span class="u u2">2 días</span></td><td>1 horma</td><td>$6.150</td><td><strong>$6.150</strong></td></tr>
+                  <tr><td><strong>Brócoli</strong><br><span style="font-size:.69rem;color:var(--gray)">⚠️ manchas</span></td><td><span class="u u3">3 días</span></td><td>5 kg</td><td>$840/kg</td><td><strong>$4.200</strong></td></tr>
+                  <tr><td><strong>Medialunas de Grasa</strong><br><span class="cc c-pan">Panadería</span></td><td><span class="u u1">1 día</span></td><td>2 bandejas</td><td>$1.200</td><td><strong>$2.400</strong></td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="form-grid g2">
-            <div class="form-group"><label class="form-label">Hora de entrega</label>
-              <select class="form-select"><option>08:00–09:00 hs</option><option>09:00–10:00 hs</option><option>06:00–07:00 hs</option></select>
+          <div class="card" style="margin-bottom:11px;">
+            <div class="card-h"><div class="card-t">Forma de recepción</div></div>
+            <div class="card-b">
+              <div class="ffg">
+                <div class="ffo on" onclick="selFF(this)"><span class="ffi">🚚</span><div class="ffl">Delivery</div><div class="ffs">El super lo lleva</div></div>
+                <div class="ffo" onclick="selFF(this)"><span class="ffi">🏪</span><div class="ffl">Retiro en sucursal</div><div class="ffs">Sin costo extra</div></div>
+              </div>
+              <div class="fgrid g2">
+                <div class="fg"><label class="fl">Hora de entrega</label>
+                  <select class="fs"><option>08:00–09:00 hs</option><option>09:00–10:00 hs</option><option>06:00–07:00 hs</option></select></div>
+                <div class="fg"><label class="fl">Dirección</label><input class="fi" value="Av. Corrientes 1540, CABA"></div>
+              </div>
             </div>
-            <div class="form-group"><label class="form-label">Dirección</label>
-              <input class="form-input" value="Av. Corrientes 1540, CABA">
+          </div>
+          <div class="card">
+            <div class="card-h"><div class="card-t">Notas para el armado</div></div>
+            <div class="card-b">
+              <textarea class="ft" placeholder="Ej: Asado en tiras ≤300g. Brócoli lo menos golpeado posible."></textarea>
+              <div class="fhint" style="margin-top:3px;">El gerente verá esta nota al preparar el pedido.</div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><div class="card-title">Notas para el armado</div></div>
-        <div class="card-body">
-          <textarea class="form-textarea" id="notas-pedido" placeholder="Ej: Asado en tiras no mayor a 300g c/u. Brócoli que sea lo menos golpeado posible."></textarea>
-          <div class="form-hint" style="margin-top:5px;">El gerente verá esta nota al preparar su pedido.</div>
+        <div>
+          <div class="cart">
+            <div class="cart-t">🛒 Resumen <span style="font-size:.72rem;color:var(--gray);font-weight:400;">4 items</span></div>
+            <div class="ci"><span>Asado Tira × 4kg</span><span>$9.120</span></div>
+            <div class="ci"><span>Queso Cremoso × 1</span><span>$6.150</span></div>
+            <div class="ci"><span>Brócoli × 5kg</span><span>$4.200</span></div>
+            <div class="ci"><span>Medialunas × 2</span><span>$2.400</span></div>
+            <div class="hr"></div>
+            <div style="display:flex;justify-content:space-between;font-size:.77rem;margin-bottom:3px;"><span>Subtotal</span><span>$21.870</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.77rem;margin-bottom:3px;"><span>Delivery</span><span>$600</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.77rem;color:var(--grn);font-weight:700;"><span>Ahorro</span><span>−$9.430</span></div>
+            <div class="ctot"><span style="font-weight:700;font-size:.86rem;text-transform:uppercase;">Total</span><span class="cv">$22.470</span></div>
+            <div class="sav">¡Ahorrás $9.430 vs góndola!</div>
+            <div style="margin-top:12px;">
+              <button class="btn b-red b-full" style="font-size:.9rem;padding:11px;" onclick="openConfirm()">✅ Confirmar Pedido</button>
+            </div>
+            <div style="margin-top:5px;font-size:.67rem;color:#aaa;text-align:center;line-height:1.5;">Al confirmar aceptás que los productos tienen descuento por proximidad de vencimiento.</div>
+          </div>
         </div>
       </div>
-    </div>
+    </div><!-- /r2 -->
 
-    <div>
-      <div class="carrito-panel">
-        <div class="carrito-titulo">🛒 Resumen <span style="font-size:0.75rem;color:var(--dia-gray);font-weight:400;">4 items</span></div>
-        <div class="carrito-item"><span>Asado Tira × 4kg</span><span>$9.120</span></div>
-        <div class="carrito-item"><span>Queso Cremoso × 1</span><span>$6.150</span></div>
-        <div class="carrito-item"><span>Brócoli × 5kg</span><span>$4.200</span></div>
-        <div class="carrito-item"><span>Medialunas × 2</span><span>$2.400</span></div>
-        <div class="divider"></div>
-        <div class="total-row"><span>Subtotal</span><span>$21.870</span></div>
-        <div class="total-row"><span>Delivery</span><span>$600</span></div>
-        <div class="total-row" style="color:var(--dia-green);font-weight:700;"><span>Ahorro</span><span>−$9.430</span></div>
-        <div class="total-final"><span class="total-label">Total</span><span class="total-valor">$22.470</span></div>
-        <div class="ahorro-pill">¡Ahorrás $9.430 vs precio de góndola!</div>
-        <div style="margin-top:16px;">
-          <button class="btn btn-red btn-full" style="font-size:0.95rem;padding:13px;" onclick="abrirConfirmacion()">✅ Confirmar Pedido</button>
+    <!-- R3: REGISTRO -->
+    <div id="r3" class="screen">
+      <div class="pnote">🔬 <strong>Registro de Restaurante.</strong> 3 pasos. La cuenta queda pendiente de aprobación por el gerente de la sucursal.</div>
+      <div style="max-width:520px;margin:0 auto;">
+        <div class="phdr" style="justify-content:center;flex-direction:column;gap:3px;text-align:center;">
+          <div class="ptitle">Registrá tu Restaurante</div>
+          <div class="psub">Accedé a productos frescos con descuento. Sin merma, sin desperdicio.</div>
         </div>
-        <div style="margin-top:8px;font-size:0.7rem;color:#aaa;text-align:center;line-height:1.5;">Al confirmar aceptás que los productos tienen descuento por proximidad de vencimiento y pueden tener imperfecciones externas.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SCREEN: CARGA GERENTE ══════════════════════════ -->
-<div id="screen-gerente" class="screen">
-  <div class="proto-note">🔬 <span><strong>Vista Gerente — Carga Diaria.</strong> Se ingresan productos, días al vencimiento y stock. El descuento se calcula automáticamente con opción de override.</span></div>
-  <div class="page-header">
-    <div><div class="page-title">Carga de Inventario — DIA Palermo</div><div class="page-subtitle">Jueves 27/02/2025 · Carlos M. (Gerente) · Publicación: pendiente</div></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-gray">⬇️ Importar ERP</button>
-      <button class="btn btn-red">✅ Publicar Ofertas</button>
-    </div>
-  </div>
-
-  <div class="alert alert-green">
-    <span>⚙️</span>
-    <div><strong>Reglas de descuento automático:</strong>&nbsp; 1 día = −40% · 2 días = −25% · 3 días = −20% · 4 días = −15% · 5 días = −10%
-      <button class="btn btn-outline btn-sm" style="margin-left:12px;font-size:0.68rem;padding:2px 10px;">Editar reglas</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">Productos a publicar hoy</div>
-      <button class="btn btn-red btn-sm">+ Agregar producto</button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead><tr><th>Producto</th><th>Categoría</th><th>Vence en</th><th>Cantidad</th><th>P. Lista</th><th>Descuento</th><th>P. Oferta</th><th>Notas / Estado</th><th></th></tr></thead>
-        <tbody>
-          <tr>
-            <td><strong>Asado de Tira</strong></td>
-            <td><span class="cat-chip c-carne">Carnes</span></td>
-            <td><span class="urgency urgency-1">1 día</span></td>
-            <td><input class="form-input" value="18" style="width:60px;padding:5px 8px;"> kg</td>
-            <td><input class="form-input" value="$3.800" style="width:80px;padding:5px 8px;"></td>
-            <td><div class="descuento-auto">🤖 −40%</div></td>
-            <td><strong style="color:var(--dia-red);">$2.280</strong></td>
-            <td><input class="form-input" placeholder="Observaciones…" style="width:140px;padding:5px 8px;"></td>
-            <td><button class="btn btn-outline btn-sm" style="color:var(--dia-red);border-color:#fcc;">✕</button></td>
-          </tr>
-          <tr>
-            <td><strong>Queso Barra Cremoso</strong></td>
-            <td><span class="cat-chip c-lacteos">Lácteos</span></td>
-            <td><span class="urgency urgency-2">2 días</span></td>
-            <td><input class="form-input" value="6" style="width:60px;padding:5px 8px;"> hormas</td>
-            <td><input class="form-input" value="$8.200" style="width:80px;padding:5px 8px;"></td>
-            <td>
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <div class="descuento-auto">🤖 −25%</div>
-                <input class="form-input" placeholder="Override %" style="width:80px;padding:4px 8px;font-size:0.75rem;">
+        <div class="rsteps">
+          <div class="rs done"><span class="rsn">✓</span>Tus datos</div>
+          <div class="rs cur"><span class="rsn">2</span>Tu negocio</div>
+          <div class="rs"><span class="rsn">3</span>Confirmar</div>
+        </div>
+        <div class="card" style="margin-bottom:11px;">
+          <div class="card-h"><div class="card-t">Datos del Responsable</div></div>
+          <div class="card-b">
+            <div class="fgrid g2">
+              <div class="fg"><label class="fl">Nombre completo</label><input class="fi" value="Martín González"></div>
+              <div class="fg"><label class="fl">WhatsApp</label><input class="fi" value="011 4422-3311"></div>
+              <div class="fg" style="grid-column:span 2"><label class="fl">Email</label><input class="fi" type="email" value="martin@labraseriadel.com.ar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:11px;">
+          <div class="card-h"><div class="card-t">Datos del Establecimiento</div></div>
+          <div class="card-b">
+            <div class="fgrid g2">
+              <div class="fg" style="grid-column:span 2"><label class="fl">Nombre del restaurante</label><input class="fi" value="La Brasería del Centro"></div>
+              <div class="fg"><label class="fl">Tipo</label>
+                <select class="fs"><option>Restaurante</option><option>Café / Bar</option><option>Catering</option><option>Hotel</option></select></div>
+              <div class="fg"><label class="fl">CUIT (opcional)</label><input class="fi" placeholder="20-xxxxxxxx-x"></div>
+              <div class="fg" style="grid-column:span 2"><label class="fl">Dirección</label><input class="fi" value="Av. Corrientes 1540, CABA"></div>
+              <div class="fg"><label class="fl">Sucursal DIA preferida</label>
+                <select class="fs"><option>DIA Palermo — Av. Santa Fe 3200</option><option>DIA Caballito</option><option>DIA Belgrano</option></select></div>
+              <div class="fg"><label class="fl">Horario de recepción</label>
+                <select class="fs"><option>06:00–08:00 hs</option><option>08:00–10:00 hs</option><option>10:00–12:00 hs</option></select></div>
+            </div>
+            <div class="hr"></div>
+            <div class="fg">
+              <label class="fl">Categorías de interés (para alertas WhatsApp)</label>
+              <div style="display:flex;gap:11px;flex-wrap:wrap;margin-top:6px;">
+                <label style="display:flex;gap:4px;align-items:center;font-size:.8rem;cursor:pointer;"><input type="checkbox" checked> 🥩 Carnes</label>
+                <label style="display:flex;gap:4px;align-items:center;font-size:.8rem;cursor:pointer;"><input type="checkbox" checked> 🧀 Lácteos</label>
+                <label style="display:flex;gap:4px;align-items:center;font-size:.8rem;cursor:pointer;"><input type="checkbox"> 🥦 Frutas y Verduras</label>
+                <label style="display:flex;gap:4px;align-items:center;font-size:.8rem;cursor:pointer;"><input type="checkbox" checked> 🥐 Panadería</label>
+                <label style="display:flex;gap:4px;align-items:center;font-size:.8rem;cursor:pointer;"><input type="checkbox"> 🍖 Fiambrería</label>
               </div>
-            </td>
-            <td><strong style="color:var(--dia-red);">$6.150</strong></td>
-            <td><input class="form-input" placeholder="Observaciones…" style="width:140px;padding:5px 8px;"></td>
-            <td><button class="btn btn-outline btn-sm" style="color:var(--dia-red);border-color:#fcc;">✕</button></td>
-          </tr>
-          <tr>
-            <td><strong>Brócoli</strong></td>
-            <td><span class="cat-chip c-fv">F. y Verd.</span></td>
-            <td><span class="urgency urgency-3">3 días</span></td>
-            <td><input class="form-input" value="22" style="width:60px;padding:5px 8px;"> kg</td>
-            <td><input class="form-input" value="$1.200" style="width:80px;padding:5px 8px;"></td>
-            <td>
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <div class="descuento-auto">🤖 −20%</div>
-                <input class="form-input" value="30" style="width:80px;padding:4px 8px;font-size:0.75rem;border-color:var(--dia-orange);">
-                <span style="font-size:0.65rem;color:var(--dia-orange);">⚡ Override activo</span>
-              </div>
-            </td>
-            <td><strong style="color:var(--dia-red);">$840</strong></td>
-            <td><input class="form-input" value="Algunos con manchas" style="width:140px;padding:5px 8px;"></td>
-            <td><button class="btn btn-outline btn-sm" style="color:var(--dia-red);border-color:#fcc;">✕</button></td>
-          </tr>
-          <tr>
-            <td><strong>Medialunas de Grasa</strong></td>
-            <td><span class="cat-chip c-pan">Panadería</span></td>
-            <td><span class="urgency urgency-1">1 día</span></td>
-            <td><input class="form-input" value="8" style="width:60px;padding:5px 8px;"> bandejas</td>
-            <td><input class="form-input" value="$2.400" style="width:80px;padding:5px 8px;"></td>
-            <td><div class="descuento-auto">🤖 −50%</div></td>
-            <td><strong style="color:var(--dia-red);">$1.200</strong></td>
-            <td><input class="form-input" placeholder="Observaciones…" style="width:140px;padding:5px 8px;"></td>
-            <td><button class="btn btn-outline btn-sm" style="color:var(--dia-red);border-color:#fcc;">✕</button></td>
-          </tr>
-          <tr style="background:#fafafa;">
-            <td colspan="9" style="text-align:center;padding:14px;"><button class="btn btn-outline">+ Agregar otro producto</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SCREEN: ÓRDENES ════════════════════════════════ -->
-<div id="screen-ordenes" class="screen">
-  <div class="proto-note">🔬 <span><strong>Vista Gerente — Órdenes del día.</strong> Hacé click en "PDF" para descargar la orden. "Avisar listo" simula el WhatsApp individual al restaurante.</span></div>
-  <div class="page-header">
-    <div><div class="page-title">Órdenes del Día — DIA Palermo</div><div class="page-subtitle">Jueves 27/02/2025 · 4 pedidos activos</div></div>
-    <button class="btn btn-wa" onclick="abrirWAModal('broadcast')">📢 Enviar WA Diario</button>
-  </div>
-
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Pedidos hoy</div><div class="stat-value" style="color:var(--dia-red)">4</div><div class="stat-sub">+2 vs ayer</div></div>
-    <div class="stat-card"><div class="stat-label">Facturación</div><div class="stat-value">$72.340</div><div class="stat-sub">vía FrescoDía</div></div>
-    <div class="stat-card"><div class="stat-label">Stock recuperado</div><div class="stat-value" style="color:var(--dia-orange)">38%</div><div class="stat-sub">del total listado</div></div>
-    <div class="stat-card"><div class="stat-label">Merma evitada</div><div class="stat-value" style="color:var(--dia-green)">$41.200</div><div class="stat-sub">est. precio normal</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">Pedidos activos</div>
-      <div style="display:flex;gap:5px;">
-        <button class="filter-chip active" style="padding:3px 10px;font-size:0.7rem;">Todos</button>
-        <button class="filter-chip" style="padding:3px 10px;font-size:0.7rem;">Nuevos</button>
-        <button class="filter-chip" style="padding:3px 10px;font-size:0.7rem;">Preparando</button>
-        <button class="filter-chip" style="padding:3px 10px;font-size:0.7rem;">Listos</button>
+            </div>
+          </div>
+        </div>
+        <div class="al a-ylw"><span>⏱️</span><div>Tu cuenta será activada en menos de <strong>2 horas hábiles</strong> por el equipo de la sucursal.</div></div>
+        <div style="display:flex;gap:9px;">
+          <button class="btn b-gray" style="flex:1;">← Volver</button>
+          <button class="btn b-red" style="flex:2;padding:11px;font-size:.88rem;">Continuar →</button>
+        </div>
+        <div style="margin-top:11px;text-align:center;font-size:.72rem;color:#aaa;">¿Ya tenés cuenta? <a href="#" style="color:var(--red);font-weight:700;">Iniciar sesión</a></div>
       </div>
-    </div>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead><tr><th>Pedido</th><th>Restaurante</th><th>Hora</th><th>Resumen</th><th>Total</th><th>Entrega</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><strong>#0044</strong></td>
-            <td><strong>La Brasería del Centro</strong><br><span style="font-size:0.72rem;color:var(--dia-gray);">011 4422-3311</span></td>
-            <td>10:32</td>
-            <td><span style="font-size:0.78rem;">Asado 4kg · Queso 1h · Brócoli 5kg · Medialunas 2</span><br><span style="font-size:0.68rem;color:var(--dia-gray);font-style:italic;">Nota: tiras ≤300g</span></td>
-            <td><strong>$22.470</strong></td>
-            <td>🚚 08–09 hs<br><span style="font-size:0.7rem;">Corrientes 1540</span></td>
-            <td><span class="s-pill s-nuevo">Nuevo</span></td>
-            <td>
-              <div style="display:flex;gap:5px;flex-direction:column;">
-                <button class="btn btn-red btn-sm">✅ Confirmar</button>
-                <div style="display:flex;gap:4px;">
-                  <button class="btn btn-gray btn-sm" onclick="descargarPDF()">📄 PDF</button>
-                  <button class="btn btn-wa btn-sm" onclick="abrirWAModal('individual')">💬 WA</button>
+    </div><!-- /r3 -->
+
+  </div><!-- /vr -->
+
+  <!-- TIENDA VIEW placeholder — filled by part2 -->
+  <div id="vt" class="view"></div>
+
+  <!-- MODAL: CONFIRMACION -->
+  <div id="m-confirm" class="mo" onclick="closeMO(event,'m-confirm')">
+    <div class="mdl">
+      <div id="m-proc" class="mstep on">
+        <div style="text-align:center;padding:40px 20px;">
+          <div class="spin"></div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:800;text-transform:uppercase;margin-bottom:5px;">Procesando pedido…</div>
+          <div style="font-size:.82rem;color:var(--gray);">Generando PDF · Enviando email · Notificando por WhatsApp</div>
+        </div>
+      </div>
+      <div id="m-done" class="mstep">
+        <div class="mh"><div class="mt">🎉 Pedido #0044 Confirmado</div><button class="mx" onclick="closeMdl('m-confirm')">✕</button></div>
+        <div class="mb">
+          <div style="background:var(--glt);padding:12px;margin-bottom:14px;border-left:4px solid var(--red);">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:.8rem;">
+              <div><span style="color:var(--gray)">Restaurante:</span> <strong>La Brasería del Centro</strong></div>
+              <div><span style="color:var(--gray)">Entrega:</span> <strong>Mañana 08–09 hs</strong></div>
+              <div><span style="color:var(--gray)">Total:</span> <strong style="color:var(--red);font-size:.95rem;">$22.470</strong></div>
+              <div><span style="color:var(--grn);font-weight:700;">Ahorrás: $9.430</span></div>
+            </div>
+          </div>
+          <div class="itabs">
+            <div class="itab on"  onclick="confTab('email')">📧 Email</div>
+            <div class="itab"     onclick="confTab('war')">💬 WA Restaurante</div>
+            <div class="itab"     onclick="confTab('wag')">💬 WA Gerente</div>
+            <div class="itab"     onclick="confTab('pdf')">📄 PDF</div>
+          </div>
+          <div id="ct-email" class="ipane on">
+            <div class="ep">
+              <div class="eph">
+                <div><strong>Para:</strong> compras.palermo@dia.com.ar &nbsp;·&nbsp; <em>Carlos M. (Gerente)</em></div>
+                <div><strong>Asunto:</strong> 🛒 Nuevo pedido FrescoDía #0044 — La Brasería del Centro</div>
+                <div><strong>CC:</strong> martin@labraseriadel.com.ar</div>
+                <div><strong>Adjunto:</strong> 📄 <span style="color:var(--red);font-weight:600;">pedido_0044_braseria.pdf</span></div>
+              </div>
+              <div class="epb">
+                <div style="background:var(--red);color:#fff;padding:7px 11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:10px;">DIA <span style="color:var(--ylw)">FrescoDía</span> — Nuevo Pedido</div>
+                Hola Carlos,<br><br>
+                Se recibió un nuevo pedido de <strong>La Brasería del Centro</strong>.<br>
+                Modalidad: <strong>🚚 Delivery — mañana 08:00–09:00 hs</strong><br>
+                Dirección: Av. Corrientes 1540, CABA<br><br>
+                El detalle completo está en el <strong>PDF adjunto</strong>.
+                <div style="background:var(--glt);border:1px solid var(--gmd);padding:8px;font-size:.76rem;margin-top:8px;">
+                  Total: <strong>$22.470</strong> &nbsp;|&nbsp; Ahorro cliente: <strong style="color:var(--grn)">$9.430</strong>
                 </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>#0042</strong></td>
-            <td><strong>La Brasería del Centro</strong><br><span style="font-size:0.72rem;color:var(--dia-gray);">011 4422-3311</span></td>
-            <td>09:44</td>
-            <td><span style="font-size:0.78rem;">Asado 6kg · Queso 2h</span></td>
-            <td><strong>$25.980</strong></td>
-            <td>🚚 08–09 hs</td>
-            <td><span class="s-pill s-preparando">Preparando</span></td>
-            <td>
-              <div style="display:flex;gap:5px;flex-direction:column;">
-                <button class="btn btn-red btn-sm">✅ Listo</button>
-                <div style="display:flex;gap:4px;">
-                  <button class="btn btn-gray btn-sm" onclick="descargarPDF()">📄 PDF</button>
-                  <button class="btn btn-wa btn-sm" onclick="abrirWAModal('individual')">💬 WA</button>
+            </div>
+          </div>
+          <div id="ct-war" class="ipane">
+            <div class="wap" style="max-width:280px;">
+              <div class="was"><div class="watb"><div class="waav">🏪</div><div><div class="wan">DIA FrescoDía Palermo</div><div class="was2">en línea</div></div></div>
+                <div class="wams">
+                  <div class="wads">Hoy 27/02</div>
+                  <div class="wab"><div class="watxt">✅ *Pedido #0044 recibido*\n\nHola Martín 👋\n\nTu pedido fue recibido y se está preparando.\n\n📦 Asado 4kg · Queso 1h\n   Brócoli 5kg · Medialunas 2\n\n🚚 Mañana 08–09 hs\n💰 Total: $22.470\n🎉 Ahorrás: $9.430\n\nTe avisamos cuando esté listo!</div><div class="watm">10:32 ✓✓</div></div>
                 </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>#0041</strong></td>
-            <td><strong>Resto Osaka</strong><br><span style="font-size:0.72rem;color:var(--dia-gray);">011 5566-7788</span></td>
-            <td>09:18</td>
-            <td><span style="font-size:0.78rem;">Jamón Cocido 12 pqt · Manzanas 8kg</span></td>
-            <td><strong>$23.780</strong></td>
-            <td>🏪 Retiro 11 hs</td>
-            <td><span class="s-pill s-listo">Listo p/ retirar</span></td>
-            <td>
-              <div style="display:flex;gap:4px;">
-                <button class="btn btn-gray btn-sm" onclick="descargarPDF()">📄 PDF</button>
-                <button class="btn btn-wa btn-sm" onclick="abrirWAModal('individual')">💬 Avisar</button>
+            </div>
+          </div>
+          <div id="ct-wag" class="ipane">
+            <div class="wap" style="max-width:280px;">
+              <div class="was"><div class="watb"><div class="waav">📋</div><div><div class="wan">FrescoDía Sistema</div><div class="was2">notificaciones</div></div></div>
+                <div class="wams">
+                  <div class="wads">Hoy 27/02</div>
+                  <div class="wab"><div class="watxt">🆕 *Nuevo pedido #0044*\n📍 Palermo\n\n🏪 La Brasería del Centro\n   Martín · 011 4422-3311\n\n📦 Asado 4kg · Queso 1h\n   Brócoli 5kg · Medialunas 2\n\n🚚 Delivery · mañana 08–09 hs\n📍 Corrientes 1540\n💬 Nota: tiras ≤300g\n💰 $22.470</div><div class="watm">10:32 ✓✓</div></div>
+                </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>#0040</strong></td>
-            <td><strong>Parrilla Don Félix</strong><br><span style="font-size:0.72rem;color:var(--dia-gray);">011 3344-9900</span></td>
-            <td>08:55</td>
-            <td><span style="font-size:0.78rem;">Asado 10kg · Queso 2h</span></td>
-            <td><strong>$35.140</strong></td>
-            <td>🚚 Entregado</td>
-            <td><span class="s-pill s-entregado">Entregado</span></td>
-            <td>
-              <button class="btn btn-gray btn-sm" onclick="descargarPDF()">📄 PDF</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SCREEN: WHATSAPP ═══════════════════════════════ -->
-<div id="screen-whatsapp" class="screen">
-  <div class="proto-note">🔬 <span><strong>Simulación de mensajes WhatsApp.</strong> Dos tipos: (1) Broadcast diario a todos los restaurantes registrados con las mejores ofertas del día. (2) Mensaje individual cuando el pedido está listo o hay cambios.</span></div>
-  <div class="page-header">
-    <div><div class="page-title">Mensajes WhatsApp — DIA Palermo</div><div class="page-subtitle">Gestión de comunicaciones con restaurantes registrados · 12 restaurantes activos</div></div>
-  </div>
-
-  <div class="inner-tabs" style="border-bottom:2px solid var(--dia-border);margin-bottom:22px;">
-    <div class="inner-tab active" onclick="switchWATab('broadcast')">📢 Broadcast Diario</div>
-    <div class="inner-tab" onclick="switchWATab('individual')">👤 Mensajes Individuales</div>
-  </div>
-
-  <!-- BROADCAST TAB -->
-  <div id="wa-tab-broadcast" class="inner-pane active">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
-
-      <!-- LEFT: Composer -->
-      <div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">📢 Mensaje Broadcast Diario</div></div>
-          <div class="card-body">
-            <div class="alert alert-info">
-              <span>ℹ️</span>
-              <div>Se envía <strong>una vez por día</strong>, entre las 07:00 y 08:00 hs, a los <strong>12 restaurantes registrados</strong> en esta sucursal. Presenta las mejores ofertas del día.</div>
             </div>
-
-            <div class="form-group" style="margin-bottom:12px;">
-              <label class="form-label">Hora de envío</label>
-              <select class="form-select" style="width:180px;">
-                <option>07:00 hs (recomendado)</option>
-                <option>07:30 hs</option>
-                <option>08:00 hs</option>
-              </select>
+          </div>
+          <div id="ct-pdf" class="ipane">
+            <div class="al a-grn" style="margin-bottom:12px;"><span>📄</span><div>El PDF fue adjuntado al email. También podés descargarlo ahora.</div></div>
+            <div style="border:1px solid var(--gmd);background:var(--glt);padding:14px;margin-bottom:12px;font-size:.76rem;color:var(--gray);">
+              <strong style="color:var(--blk);display:block;margin-bottom:7px;">pedido_0044_braseria_20250227.pdf incluye:</strong>
+              ✓ Encabezado DIA con número de pedido<br>
+              ✓ Datos del restaurante y dirección de entrega<br>
+              ✓ Tabla de productos con descuentos y precios<br>
+              ✓ Totales y ahorro vs. góndola<br>
+              ✓ Notas del comprador<br>
+              ✓ Disclaimer de vencimientos
             </div>
-
-            <div class="form-group" style="margin-bottom:12px;">
-              <label class="form-label">Vista previa del mensaje (se genera automáticamente)</label>
-              <textarea class="form-textarea" style="min-height:220px;font-family:monospace;font-size:0.78rem;line-height:1.5;" id="wa-broadcast-text">🏪 *DIA FrescoDía — Jueves 27/02*
-📍 Sucursal Palermo
-
-¡Buenos días! Las mejores ofertas de hoy para tu restaurante 👇
-
-🥩 *Asado de Tira* — −40% → $2.280/kg
-   ⚠️ Vence MAÑANA · 18 kg disponibles
-
-🥐 *Medialunas de Grasa* — −50% → $1.200 la bandeja x12
-   ⚠️ Vence MAÑANA · 8 bandejas
-
-🧀 *Queso Barra Cremoso (La Paulina)* — −25% → $6.150/horma
-   📅 Vence en 2 días · 6 hormas
-
-🍎 *Manzanas Red Delicious* — −35% → $617/kg
-   📅 Vence en 2 días · 15 kg (algunos golpes)
-
-🥦 *Brócoli* — −30% → $840/kg
-   📅 Vence en 3 días · 22 kg
-
-👉 Pedidos: frescodia.dia.com.ar/palermo
-📞 O respondé este mensaje directamente
-
-_Los precios incluyen IVA. Válido solo para el día de hoy._</textarea>
-            </div>
-
-            <div style="display:flex;gap:10px;">
-              <button class="btn btn-wa btn-full">💬 Enviar ahora a 12 restaurantes</button>
-              <button class="btn btn-gray">💾 Guardar borrador</button>
-            </div>
-
-            <div style="margin-top:10px;font-size:0.72rem;color:#aaa;">
-              Último envío: ayer 07:02 hs · Abiertos: 9/11 (82%)
-            </div>
+            <button class="btn b-red b-full" onclick="genPDF()">⬇️ Descargar PDF</button>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:7px;">
+            <button class="btn b-red b-full" onclick="genPDF()">⬇️ Descargar PDF</button>
+            <button class="btn b-out b-full" onclick="closeMdl('m-confirm')">Cerrar</button>
           </div>
         </div>
       </div>
+    </div>
+  </div><!-- /m-confirm -->
 
-      <!-- RIGHT: Phone mockup -->
-      <div>
-        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--dia-gray);margin-bottom:10px;text-align:center;">Vista en el teléfono del restaurante</div>
-        <div class="wa-phone">
-          <div class="wa-screen">
-            <div class="wa-topbar-mock">
-              <div class="wa-avatar">🏪</div>
-              <div>
-                <div class="wa-contact-name">DIA FrescoDía Palermo</div>
-                <div class="wa-contact-sub">en línea</div>
-              </div>
-            </div>
-            <div class="wa-messages">
-              <div class="wa-date-sep">Hoy, jueves 27/02</div>
-              <div class="wa-bubble-in">
-                <div class="wa-text">🏪 *DIA FrescoDía — Jueves 27/02*
+  <!-- MODAL: WA BROADCAST -->
+  <div id="m-wa" class="mo" onclick="closeMO(event,'m-wa')">
+    <div class="mdl" style="max-width:500px;">
+      <div class="mh"><div class="mt" id="m-wa-title">💬 WhatsApp</div><button class="mx" onclick="closeMdl('m-wa')">✕</button></div>
+      <div class="mb" id="m-wa-body"></div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+<!-- ════════════ TIENDA VIEW ════════════ -->
+<div id="vt-inner">
+
+  <!-- T1: CARGA DEL DÍA -->
+  <div id="t1" class="screen on">
+    <div class="pnote">🔬 <strong>Tienda — Carga Diaria.</strong> Ingresá productos, stock y días al vencimiento. El descuento se calcula solo.</div>
+    <div class="phdr">
+      <div><div class="ptitle">Carga de Inventario</div><div class="psub">DIA Palermo · Jueves 27/02/2025 · Carlos M. (Gerente)</div></div>
+      <div style="display:flex;gap:7px;"><button class="btn b-gray">⬇️ Importar ERP</button><button class="btn b-red">✅ Publicar Ofertas</button></div>
+    </div>
+    <div class="al a-grn"><span>⚙️</span><div><strong>Reglas activas:</strong>&nbsp; 1 día = −40% · 2 días = −25% · 3 días = −20% · 4 días = −15% · 5 días = −10%<button class="btn b-out b-sm" style="margin-left:9px;font-size:.66rem;padding:2px 8px;">Editar</button></div></div>
+    <div class="card">
+      <div class="card-h"><div class="card-t">Productos a publicar hoy</div><button class="btn b-red b-sm">+ Agregar</button></div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Producto</th><th>Cat.</th><th>Vence en</th><th>Cantidad</th><th>P. Lista</th><th>Descuento</th><th>P. Oferta</th><th>Notas</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Asado de Tira</strong></td><td><span class="cc c-car">Carnes</span></td><td><span class="u u1">1 día</span></td>
+              <td><input class="fi" value="18" style="width:52px;padding:3px 6px;"> kg</td>
+              <td><input class="fi" value="$3.800" style="width:74px;padding:3px 6px;"></td>
+              <td><div class="da">🤖 −40%</div></td>
+              <td><strong style="color:var(--red)">$2.280</strong></td>
+              <td><input class="fi" placeholder="Observaciones…" style="width:125px;padding:3px 6px;"></td>
+              <td><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></td>
+            </tr>
+            <tr>
+              <td><strong>Queso Barra Cremoso</strong></td><td><span class="cc c-lac">Lácteos</span></td><td><span class="u u2">2 días</span></td>
+              <td><input class="fi" value="6" style="width:52px;padding:3px 6px;"> hormas</td>
+              <td><input class="fi" value="$8.200" style="width:74px;padding:3px 6px;"></td>
+              <td><div style="display:flex;flex-direction:column;gap:2px;"><div class="da">🤖 −25%</div><input class="fi" placeholder="Override %" style="width:74px;padding:2px 6px;font-size:.71rem;"></div></td>
+              <td><strong style="color:var(--red)">$6.150</strong></td>
+              <td><input class="fi" placeholder="Observaciones…" style="width:125px;padding:3px 6px;"></td>
+              <td><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></td>
+            </tr>
+            <tr>
+              <td><strong>Brócoli</strong></td><td><span class="cc c-fv">F. y Verd.</span></td><td><span class="u u3">3 días</span></td>
+              <td><input class="fi" value="22" style="width:52px;padding:3px 6px;"> kg</td>
+              <td><input class="fi" value="$1.200" style="width:74px;padding:3px 6px;"></td>
+              <td><div style="display:flex;flex-direction:column;gap:2px;"><div class="da">🤖 −20%</div><input class="fi" value="30" style="width:74px;padding:2px 6px;font-size:.71rem;border-color:var(--org);"><span style="font-size:.62rem;color:var(--org);">⚡ Override activo</span></div></td>
+              <td><strong style="color:var(--red)">$840</strong></td>
+              <td><input class="fi" value="Algunos con manchas" style="width:125px;padding:3px 6px;"></td>
+              <td><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></td>
+            </tr>
+            <tr>
+              <td><strong>Medialunas de Grasa</strong></td><td><span class="cc c-pan">Panadería</span></td><td><span class="u u1">1 día</span></td>
+              <td><input class="fi" value="8" style="width:52px;padding:3px 6px;"> bandejas</td>
+              <td><input class="fi" value="$2.400" style="width:74px;padding:3px 6px;"></td>
+              <td><div class="da">🤖 −50%</div></td>
+              <td><strong style="color:var(--red)">$1.200</strong></td>
+              <td><input class="fi" placeholder="Observaciones…" style="width:125px;padding:3px 6px;"></td>
+              <td><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></td>
+            </tr>
+            <tr style="background:#fafafa;"><td colspan="9" style="text-align:center;padding:11px;"><button class="btn b-out">+ Agregar otro producto</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /t1 -->
+
+  <!-- T2: OFERTAS PUBLICADAS -->
+  <div id="t2" class="screen">
+    <div class="pnote">🔬 <strong>Tienda — Ofertas Publicadas.</strong> Lo que los restaurantes están viendo ahora, con estado del inventario en tiempo real.</div>
+    <div class="phdr">
+      <div><div class="ptitle">Ofertas Publicadas Hoy</div><div class="psub">DIA Palermo · Publicado 08:18 hs · Vigente hasta el cierre</div></div>
+      <button class="btn b-out b-sm" onclick="tgo('t1')">✏️ Editar carga</button>
+    </div>
+    <div class="iw">
+      <div class="ic r"><div class="iv" style="color:var(--red)">$41.200</div><div class="il">Merma evitada</div><div class="is">a precio de lista</div></div>
+      <div class="ic g"><div class="iv" style="color:var(--grn)">38%</div><div class="il">Stock reservado</div><div class="is">del total publicado</div></div>
+      <div class="ic o"><div class="iv" style="color:var(--org)">4</div><div class="il">Pedidos activos</div><div class="is">hoy en proceso</div></div>
+      <div class="ic"><div class="iv">43</div><div class="il">Productos publicados</div><div class="is">en 5 categorías</div></div>
+      <div class="ic r"><div class="iv" style="color:var(--red)">6</div><div class="il">Vencen mañana</div><div class="is">requieren atención</div></div>
+      <div class="ic g"><div class="iv" style="color:var(--grn)">$72.340</div><div class="il">Facturación del día</div><div class="is">vía FrescoDía</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t">Estado por producto</div></div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Producto</th><th>Cat.</th><th>Vence</th><th>Publicado</th><th>Reservado</th><th>Disponible</th><th>% Vendido</th><th>P. Oferta</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Asado de Tira</strong></td><td><span class="cc c-car">Carnes</span></td><td><span class="u u1">1 día</span></td><td>18 kg</td><td><strong style="color:var(--org)">8 kg</strong></td><td>10 kg</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:45%;height:4px;background:var(--org);"></div></div><span>45%</span></div></td><td>$2.280/kg</td></tr>
+            <tr><td><strong>Queso Barra Cremoso</strong></td><td><span class="cc c-lac">Lácteos</span></td><td><span class="u u2">2 días</span></td><td>6 h</td><td><strong style="color:var(--grn)">1 h</strong></td><td>5 h</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:17%;height:4px;background:var(--grn);"></div></div><span>17%</span></div></td><td>$6.150/h</td></tr>
+            <tr><td><strong>Brócoli</strong></td><td><span class="cc c-fv">F. y Verd.</span></td><td><span class="u u3">3 días</span></td><td>22 kg</td><td><strong style="color:var(--red)">13 kg</strong></td><td>9 kg</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:60%;height:4px;background:var(--red);"></div></div><span>60%</span></div></td><td>$840/kg</td></tr>
+            <tr><td><strong>Medialunas de Grasa</strong></td><td><span class="cc c-pan">Panadería</span></td><td><span class="u u1">1 día</span></td><td>8 bdj</td><td><strong style="color:var(--org)">2 bdj</strong></td><td>6 bdj</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:25%;height:4px;background:var(--org);"></div></div><span>25%</span></div></td><td>$1.200/bdj</td></tr>
+            <tr><td><strong>Jamón Cocido</strong></td><td><span class="cc c-fia">Fiambrería</span></td><td><span class="u u4">4 días</span></td><td>30 pqt</td><td><strong style="color:var(--grn)">3 pqt</strong></td><td>27 pqt</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:10%;height:4px;background:var(--grn);"></div></div><span>10%</span></div></td><td>$1.572/pqt</td></tr>
+            <tr><td><strong>Manzanas Red Delicious</strong></td><td><span class="cc c-fv">F. y Verd.</span></td><td><span class="u u2">2 días</span></td><td>15 kg</td><td><strong style="color:var(--org)">5 kg</strong></td><td>10 kg</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="flex:1;height:4px;background:#eee;"><div style="width:33%;height:4px;background:var(--org);"></div></div><span>33%</span></div></td><td>$617/kg</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /t2 -->
+
+  <!-- T3: CLIENTES -->
+  <div id="t3" class="screen">
+    <div class="pnote">🔬 <strong>Tienda — Clientes Registrados.</strong> Restaurantes activos y solicitudes pendientes de aprobación.</div>
+    <div class="phdr">
+      <div><div class="ptitle">Clientes Registrados</div><div class="psub">DIA Palermo · 12 activos · 3 pendientes de aprobación</div></div>
+      <div style="display:flex;gap:7px;"><input class="fi" placeholder="🔍 Buscar cliente…" style="width:190px;padding:4px 10px;font-size:.76rem;"><button class="btn b-red b-sm">+ Agregar manual</button></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="sl">Clientes activos</div><div class="sv" style="color:var(--grn)">12</div><div class="ss">reciben WA diario</div></div>
+      <div class="stat"><div class="sl">Pendientes aprobación</div><div class="sv" style="color:var(--org)">3</div><div class="ss">esperan activación</div></div>
+      <div class="stat"><div class="sl">Pedidos este mes</div><div class="sv">47</div><div class="ss">promedio 3.9/cliente</div></div>
+      <div class="stat"><div class="sl">Categoría más pedida</div><div class="sv" style="font-size:1.25rem;">🥩</div><div class="ss">Carnes — 68%</div></div>
+    </div>
+    <div class="al a-ylw" style="margin-bottom:13px;"><span>⏳</span><div><strong>3 solicitudes pendientes.</strong> Aprobá antes de las 10:00 hs para que puedan comprar hoy.</div></div>
+    <div class="card" style="margin-bottom:13px;">
+      <div class="card-h"><div class="card-t">⏳ Pendientes de aprobación</div></div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Restaurante</th><th>Contacto</th><th>Tipo</th><th>Intereses</th><th>Registrado</th><th>Acciones</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>El Rincón Porteño</strong><br><span style="font-size:.7rem;color:var(--gray)">Av. Santa Fe 2810</span></td>
+              <td>Roberto Sosa<br><span style="font-size:.7rem;color:var(--gray)">011 4833-2211</span></td>
+              <td>Restaurante</td><td><span class="cc c-car">Carnes</span> <span class="cc c-lac">Lácteos</span></td>
+              <td style="font-size:.74rem;">Hoy 09:14 hs</td>
+              <td><div style="display:flex;gap:4px;"><button class="btn b-grn b-sm">✅ Aprobar</button><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><strong>Café del Tiempo</strong><br><span style="font-size:.7rem;color:var(--gray)">Thames 1640, Palermo</span></td>
+              <td>Ana Méndez<br><span style="font-size:.7rem;color:var(--gray)">011 4772-9988</span></td>
+              <td>Café / Bar</td><td><span class="cc c-pan">Panadería</span> <span class="cc c-lac">Lácteos</span></td>
+              <td style="font-size:.74rem;">Ayer 17:32 hs</td>
+              <td><div style="display:flex;gap:4px;"><button class="btn b-grn b-sm">✅ Aprobar</button><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><strong>Parrilla El Toro</strong><br><span style="font-size:.7rem;color:var(--gray)">Av. Cabildo 3200</span></td>
+              <td>Jorge Peralta<br><span style="font-size:.7rem;color:var(--gray)">011 4780-5544</span></td>
+              <td>Restaurante</td><td><span class="cc c-car">Carnes</span></td>
+              <td style="font-size:.74rem;">Ayer 14:05 hs</td>
+              <td><div style="display:flex;gap:4px;"><button class="btn b-grn b-sm">✅ Aprobar</button><button class="btn b-out b-sm" style="color:var(--red);border-color:#fcc;">✕</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">✅ Clientes Activos</div>
+        <div style="display:flex;gap:4px;">
+          <button class="fc on" style="padding:2px 9px;font-size:.68rem;">Todos</button>
+          <button class="fc" style="padding:2px 9px;font-size:.68rem;">Con pedido hoy</button>
+          <button class="fc" style="padding:2px 9px;font-size:.68rem;">Sin actividad</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Restaurante</th><th>Contacto / WA</th><th>Tipo</th><th>Intereses</th><th>Pedidos</th><th>Último pedido</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>La Brasería del Centro</strong><br><span style="font-size:.7rem;color:var(--gray)">Corrientes 1540</span></td>
+              <td>Martín González<br><span style="font-size:.7rem;color:var(--gray)">011 4422-3311</span></td>
+              <td>Restaurante</td><td><span class="cc c-car">Carnes</span> <span class="cc c-lac">Lácteos</span> <span class="cc c-pan">Pan.</span></td>
+              <td><strong>24</strong></td><td>Hoy 10:32</td><td><span class="sp s-act">Activo</span></td>
+              <td><button class="btn b-gray b-sm">Historial</button></td>
+            </tr>
+            <tr>
+              <td><strong>Resto Osaka</strong><br><span style="font-size:.7rem;color:var(--gray)">Libertador 4820</span></td>
+              <td>Kenji Tanaka<br><span style="font-size:.7rem;color:var(--gray)">011 5566-7788</span></td>
+              <td>Restaurante</td><td><span class="cc c-fia">Fiamb.</span> <span class="cc c-fv">F.y V.</span></td>
+              <td><strong>18</strong></td><td>Hoy 09:18</td><td><span class="sp s-act">Activo</span></td>
+              <td><button class="btn b-gray b-sm">Historial</button></td>
+            </tr>
+            <tr>
+              <td><strong>Parrilla Don Félix</strong><br><span style="font-size:.7rem;color:var(--gray)">Rivadavia 8900</span></td>
+              <td>Félix Romero<br><span style="font-size:.7rem;color:var(--gray)">011 3344-9900</span></td>
+              <td>Restaurante</td><td><span class="cc c-car">Carnes</span></td>
+              <td><strong>31</strong></td><td>Ayer</td><td><span class="sp s-act">Activo</span></td>
+              <td><button class="btn b-gray b-sm">Historial</button></td>
+            </tr>
+            <tr>
+              <td><strong>Café Romano</strong><br><span style="font-size:.7rem;color:var(--gray)">Av. Santa Fe 3580</span></td>
+              <td>Paolo Rossi<br><span style="font-size:.7rem;color:var(--gray)">011 9988-1122</span></td>
+              <td>Café / Bar</td><td><span class="cc c-pan">Pan.</span> <span class="cc c-lac">Lácteos</span></td>
+              <td><strong>12</strong></td><td>Hace 3 días</td><td><span class="sp s-act">Activo</span></td>
+              <td><button class="btn b-gray b-sm">Historial</button></td>
+            </tr>
+            <tr>
+              <td><strong>Hotel Boutique Arcos</strong><br><span style="font-size:.7rem;color:var(--gray)">Soler 5765</span></td>
+              <td>Valeria Ibáñez<br><span style="font-size:.7rem;color:var(--gray)">011 4772-3300</span></td>
+              <td>Hotel</td><td><span class="cc c-car">Carnes</span> <span class="cc c-fv">F.y V.</span> <span class="cc c-lac">Lácteos</span></td>
+              <td><strong>9</strong></td><td>Hace 5 días</td><td><span class="sp s-pend">Inactivo</span></td>
+              <td><button class="btn b-gray b-sm">Historial</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /t3 -->
+
+  <!-- T4: WHATSAPP -->
+  <div id="t4" class="screen">
+    <div class="pnote">🔬 <strong>Tienda — WhatsApp.</strong> Broadcast diario automático y notificaciones individuales por pedido.</div>
+    <div class="phdr">
+      <div><div class="ptitle">Mensajes WhatsApp</div><div class="psub">DIA Palermo · 12 restaurantes activos</div></div>
+    </div>
+    <div class="itabs" id="wa-tabs">
+      <div class="itab on" onclick="waTab('bc')">📢 Broadcast Diario</div>
+      <div class="itab"    onclick="waTab('ind')">👤 Notificación Individual</div>
+    </div>
+    <!-- BROADCAST -->
+    <div id="wa-bc" class="ipane on">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
+        <div>
+          <div class="card">
+            <div class="card-h"><div class="card-t">📢 Mensaje del Día</div></div>
+            <div class="card-b">
+              <div class="al a-inf"><span>ℹ️</span><div>Se envía a las <strong>07:00 hs</strong> a los <strong>12 restaurantes activos</strong> de esta sucursal.</div></div>
+              <div class="fg" style="margin-bottom:9px;">
+                <label class="fl">Vista previa (generado automáticamente)</label>
+                <textarea class="ft" style="min-height:195px;font-family:monospace;font-size:.73rem;line-height:1.48;">🏪 *DIA FrescoDía — Jueves 27/02*
 📍 Sucursal Palermo
 
 ¡Buenos días! Las mejores ofertas de hoy 👇
 
 🥩 *Asado de Tira* — −40% → $2.280/kg
-⚠️ Vence MAÑANA · 18 kg
+   ⚠️ Vence MAÑANA · 18 kg disp.
 
-🥐 *Medialunas* — −50% → $1.200/bdj
-⚠️ Vence MAÑANA · 8 bandejas
+🥐 *Medialunas de Grasa* — −50% → $1.200/bdj
+   ⚠️ Vence MAÑANA · 8 bandejas
 
 🧀 *Queso Cremoso (La Paulina)*
-−25% → $6.150/horma · 6 disp.
+   −25% → $6.150/horma · 6 disp.
 
 🍎 *Manzanas* −35% · 🥦 *Brócoli* −30%
 
-👉 frescodia.dia.com.ar/palermo</div>
-                <div class="wa-time">07:02 ✓✓</div>
+👉 frescodia.dia.com.ar/palermo
+_Válido solo hoy. Precios con IVA._</textarea>
               </div>
-              <!-- Restaurant reply -->
-              <div class="wa-bubble-out">
-                <div class="wa-text">Buenísimo! Ya entro a pedir el asado y el queso</div>
-                <div class="wa-time">07:18 ✓✓</div>
+              <div style="display:flex;gap:7px;">
+                <button class="btn b-wa b-full">💬 Enviar ahora a 12 restaurantes</button>
+                <button class="btn b-gray">💾 Borrador</button>
               </div>
+              <div style="margin-top:7px;font-size:.69rem;color:#aaa;">Último envío: ayer 07:02 hs · Apertura: 9/11 (82%)</div>
             </div>
           </div>
         </div>
+        <div>
+          <div style="font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:7px;text-align:center;">Vista en el teléfono del restaurante</div>
+          <div class="wap">
+            <div class="was">
+              <div class="watb"><div class="waav">🏪</div><div><div class="wan">DIA FrescoDía Palermo</div><div class="was2">en línea</div></div></div>
+              <div class="wams">
+                <div class="wads">Hoy, jueves 27/02</div>
+                <div class="wab">
+                  <div class="watxt">🏪 *DIA FrescoDía — 27/02*
 
-        <div style="margin-top:16px;background:#fafafa;border:1px solid var(--dia-border);padding:14px;font-size:0.78rem;">
-          <div style="font-weight:700;margin-bottom:8px;text-transform:uppercase;font-size:0.7rem;letter-spacing:0.3px;color:var(--dia-gray);">Estadísticas del último broadcast</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><div style="font-size:1.2rem;font-weight:800;color:var(--dia-red);">12</div><div style="font-size:0.7rem;color:var(--dia-gray);">enviados</div></div>
-            <div><div style="font-size:1.2rem;font-weight:800;color:var(--dia-green);">9</div><div style="font-size:0.7rem;color:var(--dia-gray);">abiertos (75%)</div></div>
-            <div><div style="font-size:1.2rem;font-weight:800;color:var(--dia-orange);">4</div><div style="font-size:0.7rem;color:var(--dia-gray);">respondieron</div></div>
-            <div><div style="font-size:1.2rem;font-weight:800;">3</div><div style="font-size:0.7rem;color:var(--dia-gray);">pedidos generados</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+¡Buenos días! Ofertas de hoy 👇
 
-  <!-- INDIVIDUAL TAB -->
-  <div id="wa-tab-individual" class="inner-pane">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+🥩 Asado −40% → $2.280/kg
+⚠️ Vence MAÑANA · 18 kg
 
-      <!-- LEFT: Message types -->
-      <div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-header"><div class="card-title">👤 Tipo de notificación</div></div>
-          <div class="card-body">
-            <div style="display:grid;gap:10px;margin-bottom:14px;">
-              <div id="msg-type-listo" onclick="setMsgType('listo')" style="border:2px solid var(--dia-red);background:var(--dia-red-light);padding:12px;cursor:pointer;border-radius:2px;">
-                <div style="font-weight:700;font-size:0.88rem;margin-bottom:2px;">✅ Pedido listo para retiro / despacho</div>
-                <div style="font-size:0.75rem;color:var(--dia-gray);">Se notifica al restaurante que su pedido ya está preparado</div>
-              </div>
-              <div id="msg-type-cambio" onclick="setMsgType('cambio')" style="border:2px solid var(--dia-border);padding:12px;cursor:pointer;border-radius:2px;">
-                <div style="font-weight:700;font-size:0.88rem;margin-bottom:2px;">⚠️ Cambio en el pedido</div>
-                <div style="font-size:0.75rem;color:var(--dia-gray);">Producto faltante, cantidad reducida u otro cambio</div>
+🥐 Medialunas −50% → $1.200
+⚠️ Vence MAÑANA · 8 bdj
+
+🧀 Queso −25% · 🍎 Manzanas −35%
+
+👉 frescodia.dia.com.ar</div>
+                  <div class="watm">07:02 ✓✓</div>
+                </div>
+                <div class="wabo"><div class="watxt">Buenísimo! Ya pido el asado 🙌</div><div class="watm">07:18 ✓✓</div></div>
               </div>
             </div>
-
-            <div class="form-group" style="margin-bottom:12px;">
-              <label class="form-label">Restaurante destinatario</label>
-              <select class="form-select">
-                <option>La Brasería del Centro — #0044</option>
-                <option>Resto Osaka — #0041</option>
-                <option>Parrilla Don Félix — #0040</option>
-              </select>
-            </div>
-
-            <div class="form-group" style="margin-bottom:12px;">
-              <label class="form-label">Mensaje (editable antes de enviar)</label>
-              <textarea class="form-textarea" id="wa-individual-text" style="min-height:180px;font-family:monospace;font-size:0.77rem;line-height:1.5;">✅ *DIA FrescoDía — Pedido #0044 listo*
-
-Hola Martín 👋
-
-Tu pedido está *listo para despacho* y saldrá en camino hoy entre las *08:00 y 09:00 hs*.
-
-📦 Resumen:
-• Asado de Tira — 4 kg
-• Queso Barra Cremoso — 1 horma
-• Brócoli — 5 kg
-• Medialunas de Grasa — 2 bandejas
-
-💰 Total: $22.470
-📍 Entrega en: Av. Corrientes 1540
-
-_Ante cualquier consulta respondé este mensaje._
-*DIA Sucursal Palermo*</textarea>
-            </div>
-
-            <button class="btn btn-wa btn-full">💬 Enviar a Martín González</button>
           </div>
         </div>
       </div>
-
-      <!-- RIGHT: Phone mockup individual -->
-      <div>
-        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--dia-gray);margin-bottom:10px;text-align:center;">Vista en el teléfono del restaurante</div>
-        <div class="wa-phone">
-          <div class="wa-screen">
-            <div class="wa-topbar-mock">
-              <div class="wa-avatar">🏪</div>
-              <div>
-                <div class="wa-contact-name">DIA FrescoDía Palermo</div>
-                <div class="wa-contact-sub">en línea</div>
+    </div><!-- /wa-bc -->
+    <!-- INDIVIDUAL -->
+    <div id="wa-ind" class="ipane">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
+        <div>
+          <div class="card">
+            <div class="card-h"><div class="card-t">👤 Notificación Individual</div></div>
+            <div class="card-b">
+              <div style="display:grid;gap:7px;margin-bottom:11px;">
+                <div id="mt-ok" onclick="setMT('ok')" style="border:2px solid var(--red);background:var(--red-light);padding:9px;cursor:pointer;border-radius:2px;">
+                  <div style="font-weight:700;font-size:.83rem;margin-bottom:1px;">✅ Pedido listo para retiro / despacho</div>
+                  <div style="font-size:.7rem;color:var(--gray)">Notificar que el pedido está preparado</div>
+                </div>
+                <div id="mt-chg" onclick="setMT('chg')" style="border:2px solid var(--gmd);padding:9px;cursor:pointer;border-radius:2px;">
+                  <div style="font-weight:700;font-size:.83rem;margin-bottom:1px;">⚠️ Cambio en el pedido</div>
+                  <div style="font-size:.7rem;color:var(--gray)">Producto faltante o cantidad modificada</div>
+                </div>
               </div>
-            </div>
-            <div class="wa-messages" id="wa-phone-preview">
-              <div class="wa-date-sep">Hoy, jueves 27/02</div>
-              <div class="wa-bubble-in" id="wa-preview-bubble">
-                <div class="wa-text" id="wa-preview-text">✅ *DIA FrescoDía — Pedido #0044 listo*
+              <div class="fg" style="margin-bottom:9px;">
+                <label class="fl">Destinatario</label>
+                <select class="fs"><option>La Brasería del Centro — #0044</option><option>Resto Osaka — #0041</option><option>Parrilla Don Félix — #0040</option></select>
+              </div>
+              <div class="fg" style="margin-bottom:9px;">
+                <label class="fl">Mensaje</label>
+                <textarea class="ft" id="wa-ind-txt" style="min-height:165px;font-family:monospace;font-size:.72rem;line-height:1.47;">✅ *DIA FrescoDía — Pedido #0044 listo*
 
 Hola Martín 👋
 
@@ -1076,583 +964,448 @@ Tu pedido está *listo para despacho* y saldrá entre las *08:00 y 09:00 hs*.
    Brócoli 5kg · Medialunas 2
 
 💰 Total: $22.470
-📍 Corrientes 1540</div>
-                <div class="wa-time">10:48 ✓✓</div>
+📍 Corrientes 1540
+
+_Respondé si tenés consultas._
+*DIA Sucursal Palermo*</textarea>
               </div>
-              <div class="wa-bubble-out">
-                <div class="wa-text">Gracias! A las 8 esperamos al repartidor</div>
-                <div class="wa-time">10:51 ✓✓</div>
-              </div>
+              <button class="btn b-wa b-full">💬 Enviar a Martín González</button>
             </div>
           </div>
         </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SCREEN: REGISTRO ═══════════════════════════════ -->
-<div id="screen-registro" class="screen">
-  <div class="proto-note">🔬 <span><strong>Registro de Restaurante.</strong> 3 pasos. Al completarse queda pendiente de aprobación por el gerente de la sucursal.</span></div>
-  <div class="page-header" style="justify-content:center;text-align:center;">
-    <div>
-      <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
-        <div class="dia-logo-box" style="font-size:1rem;">DIA</div>
-        <div class="page-title">FrescoDía — Registrá tu Restaurante</div>
-      </div>
-      <div class="page-subtitle">Accedé a productos con descuento por vencimiento próximo. Sin merma, sin desperdicio.</div>
-    </div>
-  </div>
-
-  <div style="max-width:560px;margin:0 auto;">
-    <div class="reg-steps">
-      <div class="reg-step done"><span class="reg-step-num">✓</span>Tus datos</div>
-      <div class="reg-step current"><span class="reg-step-num">2</span>Tu negocio</div>
-      <div class="reg-step"><span class="reg-step-num">3</span>Confirmación</div>
-    </div>
-
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-header"><div class="card-title">Datos del Responsable</div></div>
-      <div class="card-body">
-        <div class="form-grid g2">
-          <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" value="Martín González"></div>
-          <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-input" value="011 4422-3311"></div>
-          <div class="form-group" style="grid-column:span 2"><label class="form-label">Email</label><input class="form-input" type="email" value="martin@labraseriadel.com.ar"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-header"><div class="card-title">Datos del Establecimiento</div></div>
-      <div class="card-body">
-        <div class="form-grid g2">
-          <div class="form-group" style="grid-column:span 2"><label class="form-label">Nombre del restaurante</label><input class="form-input" value="La Brasería del Centro"></div>
-          <div class="form-group"><label class="form-label">Tipo</label>
-            <select class="form-select"><option>Restaurante</option><option>Café / Bar</option><option>Catering</option><option>Hotel</option></select>
-          </div>
-          <div class="form-group"><label class="form-label">CUIT (opcional)</label><input class="form-input" placeholder="20-xxxxxxxx-x"><span class="form-hint">Para facturación</span></div>
-          <div class="form-group" style="grid-column:span 2"><label class="form-label">Dirección del local</label><input class="form-input" value="Av. Corrientes 1540, CABA"></div>
-          <div class="form-group"><label class="form-label">Sucursal DIA preferida</label>
-            <select class="form-select"><option>DIA Palermo — Av. Santa Fe 3200</option><option>DIA Caballito</option><option>DIA Belgrano</option></select>
-          </div>
-          <div class="form-group"><label class="form-label">Horario de recepción</label>
-            <select class="form-select"><option>06:00–08:00 hs</option><option>08:00–10:00 hs</option><option>10:00–12:00 hs</option></select>
-          </div>
-        </div>
-        <div class="divider"></div>
-        <div class="form-group">
-          <label class="form-label">Categorías de interés (para las alertas de WhatsApp)</label>
-          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
-            <label style="display:flex;gap:6px;align-items:center;font-size:0.84rem;cursor:pointer;"><input type="checkbox" checked> 🥩 Carnes</label>
-            <label style="display:flex;gap:6px;align-items:center;font-size:0.84rem;cursor:pointer;"><input type="checkbox" checked> 🧀 Lácteos</label>
-            <label style="display:flex;gap:6px;align-items:center;font-size:0.84rem;cursor:pointer;"><input type="checkbox"> 🥦 Frutas y Verduras</label>
-            <label style="display:flex;gap:6px;align-items:center;font-size:0.84rem;cursor:pointer;"><input type="checkbox" checked> 🥐 Panadería</label>
-            <label style="display:flex;gap:6px;align-items:center;font-size:0.84rem;cursor:pointer;"><input type="checkbox"> 🍖 Fiambrería</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert alert-yellow">
-      <span>⏱️</span>
-      <div>Al registrarte confirmás que sos titular o encargado de un establecimiento gastronómico. Tu cuenta será activada en menos de <strong>2 horas hábiles</strong> por el equipo de la sucursal.</div>
-    </div>
-
-    <div style="display:flex;gap:10px;">
-      <button class="btn btn-gray" style="flex:1;">← Volver</button>
-      <button class="btn btn-red" style="flex:2;padding:13px;font-size:0.92rem;">Continuar → Confirmar datos</button>
-    </div>
-    <div style="margin-top:14px;text-align:center;font-size:0.75rem;color:#aaa;">¿Ya tenés cuenta? <a href="#" style="color:var(--dia-red);font-weight:700;">Iniciar sesión</a></div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: CONFIRMACIÓN PEDIDO ════════════════════ -->
-<div id="modal-confirmacion" class="modal-overlay" onclick="cerrarModalFondo(event,'modal-confirmacion')">
-  <div class="modal">
-
-    <!-- Paso 1: Procesando -->
-    <div id="paso-proc" class="modal-step active">
-      <div class="processing-wrap">
-        <div class="spinner"></div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;text-transform:uppercase;margin-bottom:6px;">Procesando pedido…</div>
-        <div style="font-size:0.85rem;color:var(--dia-gray);">Generando PDF · Enviando email · Notificando por WhatsApp</div>
-      </div>
-    </div>
-
-    <!-- Paso 2: Confirmado -->
-    <div id="paso-conf" class="modal-step">
-      <div class="modal-header">
-        <div class="modal-title">🎉 Pedido #0044 Confirmado</div>
-        <button class="modal-close" onclick="cerrarModal('modal-confirmacion')">✕</button>
-      </div>
-      <div class="modal-body">
-
-        <!-- Resumen rápido -->
-        <div style="background:var(--dia-gray-light);padding:14px;margin-bottom:16px;border-left:4px solid var(--dia-red);">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.82rem;">
-            <div><span style="color:var(--dia-gray);">Restaurante:</span> <strong>La Brasería del Centro</strong></div>
-            <div><span style="color:var(--dia-gray);">Entrega:</span> <strong>Mañana 08–09 hs</strong></div>
-            <div><span style="color:var(--dia-gray);">Total:</span> <strong style="color:var(--dia-red);font-size:1rem;">$22.470</strong></div>
-            <div><span style="color:var(--dia-green);font-weight:700;">Ahorrás: $9.430</span></div>
-          </div>
-        </div>
-
-        <div class="inner-tabs">
-          <div class="inner-tab active" onclick="switchConfTab('email')">📧 Email enviado</div>
-          <div class="inner-tab" onclick="switchConfTab('wa-rest')">💬 WA Restaurante</div>
-          <div class="inner-tab" onclick="switchConfTab('wa-ger')">💬 WA Gerente</div>
-          <div class="inner-tab" onclick="switchConfTab('pdf')">📄 PDF</div>
-        </div>
-
-        <!-- Email -->
-        <div id="conf-tab-email" class="inner-pane active">
-          <div class="email-preview">
-            <div class="email-header-strip">
-              <div><strong>Para:</strong> compras@diafrescodia.com.ar · <em>Carlos M. (Gerente Palermo)</em></div>
-              <div><strong>Asunto:</strong> 🛒 Nuevo pedido FrescoDía #0044 — La Brasería del Centro</div>
-              <div><strong>CC:</strong> martin@labraseriadel.com.ar</div>
-              <div><strong>Adjunto:</strong> 📄 <span style="color:var(--dia-red);font-weight:600;">pedido_0044_braseria.pdf</span></div>
-            </div>
-            <div class="email-body-strip">
-              <div style="background:var(--dia-red);color:white;padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;margin-bottom:12px;">DIA <span style="color:var(--dia-yellow);">FrescoDía</span> — Nuevo Pedido</div>
-              Hola Carlos,<br><br>
-              Se recibió un nuevo pedido de <strong>La Brasería del Centro</strong>.<br>
-              Modalidad: <strong>🚚 Delivery — mañana 08:00 a 09:00 hs</strong><br>
-              Dirección: Av. Corrientes 1540, CABA<br><br>
-              El detalle completo de productos, precios y notas del comprador se encuentra en el <strong>PDF adjunto</strong>.<br><br>
-              <div style="background:#fafafa;border:1px solid var(--dia-border);padding:10px;font-size:0.78rem;margin-top:8px;">
-                Total del pedido: <strong>$22.470</strong> &nbsp;|&nbsp; Ahorro para el restaurante: <strong style="color:var(--dia-green);">$9.430</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- WA Restaurante -->
-        <div id="conf-tab-wa-rest" class="inner-pane">
-          <div class="wa-phone" style="max-width:300px;">
-            <div class="wa-screen">
-              <div class="wa-topbar-mock">
-                <div class="wa-avatar">🏪</div>
-                <div><div class="wa-contact-name">DIA FrescoDía Palermo</div><div class="wa-contact-sub">en línea</div></div>
-              </div>
-              <div class="wa-messages">
-                <div class="wa-date-sep">Hoy, jueves 27/02</div>
-                <div class="wa-bubble-in">
-                  <div class="wa-text">✅ *DIA FrescoDía — Pedido #0044 recibido*
+        <div>
+          <div style="font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:7px;text-align:center;">Vista en el teléfono del restaurante</div>
+          <div class="wap">
+            <div class="was">
+              <div class="watb"><div class="waav">🏪</div><div><div class="wan">DIA FrescoDía Palermo</div><div class="was2">en línea</div></div></div>
+              <div class="wams">
+                <div class="wads">Hoy 27/02</div>
+                <div class="wab" id="wa-ind-prev">
+                  <div class="watxt" id="wa-ind-prev-txt">✅ *Pedido #0044 listo*
 
 Hola Martín 👋
 
-Tu pedido fue recibido y el gerente comenzará a prepararlo en breve.
+Listo para despacho entre las *08:00 y 09:00 hs*.
 
 📦 Asado 4kg · Queso 1h
    Brócoli 5kg · Medialunas 2
 
-🚚 Entrega: mañana 08–09 hs
-📍 Corrientes 1540
-💰 Total: $22.470
-🎉 Ahorrás: $9.430
-
-Te avisamos cuando esté listo!</div>
-                  <div class="wa-time">10:32 ✓✓</div>
+💰 $22.470 📍 Corrientes 1540</div>
+                  <div class="watm">10:48 ✓✓</div>
                 </div>
+                <div class="wabo"><div class="watxt">Gracias! Los esperamos a las 8</div><div class="watm">10:51 ✓</div></div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- WA Gerente -->
-        <div id="conf-tab-wa-ger" class="inner-pane">
-          <div class="wa-phone" style="max-width:300px;">
-            <div class="wa-screen">
-              <div class="wa-topbar-mock">
-                <div class="wa-avatar">📋</div>
-                <div><div class="wa-contact-name">FrescoDía — Sistema</div><div class="wa-contact-sub">notificaciones</div></div>
-              </div>
-              <div class="wa-messages">
-                <div class="wa-date-sep">Hoy, jueves 27/02</div>
-                <div class="wa-bubble-in">
-                  <div class="wa-text">🆕 *Nuevo pedido #0044*
-📍 Palermo
-
-🏪 La Brasería del Centro
-   Martín González · 011 4422-3311
-
-📦 Asado de Tira — 4 kg
-   Queso Cremoso — 1 horma
-   Brócoli — 5 kg
-   Medialunas — 2 bandejas
-
-🚚 Delivery · mañana 08–09 hs
-📍 Av. Corrientes 1540
-💬 *Nota:* tiras ≤300g c/u
-
-💰 Total: $22.470
-📄 PDF adjunto enviado al email</div>
-                  <div class="wa-time">10:32 ✓✓</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PDF -->
-        <div id="conf-tab-pdf" class="inner-pane">
-          <div class="alert alert-green" style="margin-bottom:14px;">
-            <span>📄</span>
-            <div>El PDF fue adjuntado al email enviado al gerente. También podés descargarlo para tus registros.</div>
-          </div>
-          <div style="border:1px solid var(--dia-border);background:#fafafa;padding:16px;margin-bottom:14px;font-size:0.78rem;color:var(--dia-gray);">
-            <div style="font-weight:700;color:var(--dia-black);margin-bottom:8px;">pedido_0044_braseria_20250227.pdf incluye:</div>
-            ✓ Encabezado DIA con número de pedido y fecha<br>
-            ✓ Datos del restaurante y dirección de entrega<br>
-            ✓ Tabla de productos con P. Lista / Descuento / P. Oferta<br>
-            ✓ Resumen de totales y ahorro<br>
-            ✓ Notas del comprador<br>
-            ✓ Pie de página con disclaimer de vencimientos
-          </div>
-          <button class="btn btn-red btn-full" onclick="descargarPDF()">⬇️ Descargar PDF ahora</button>
-        </div>
-
-        <div style="margin-top:18px;display:flex;gap:8px;">
-          <button class="btn btn-red btn-full" onclick="descargarPDF()">⬇️ Descargar PDF</button>
-          <button class="btn btn-outline btn-full" onclick="cerrarModal('modal-confirmacion')">Cerrar</button>
         </div>
       </div>
-    </div>
+    </div><!-- /wa-ind -->
+  </div><!-- /t4 -->
 
-  </div>
-</div>
+  <!-- T5: ÓRDENES -->
+  <div id="t5" class="screen">
+    <div class="pnote">🔬 <strong>Tienda — Órdenes del Día.</strong> Gestioná el estado de cada pedido. PDF descargable por orden.</div>
+    <div class="phdr">
+      <div><div class="ptitle">Órdenes del Día</div><div class="psub">DIA Palermo · Jueves 27/02/2025 · 4 pedidos activos</div></div>
+      <button class="btn b-wa" onclick="openWAModal('bc')">📢 Enviar WA Diario</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="sl">Pedidos hoy</div><div class="sv" style="color:var(--red)">4</div><div class="ss">+2 vs ayer</div></div>
+      <div class="stat"><div class="sl">Facturación</div><div class="sv">$72.340</div><div class="ss">vía FrescoDía</div></div>
+      <div class="stat"><div class="sl">Stock recuperado</div><div class="sv" style="color:var(--org)">38%</div><div class="ss">del publicado</div></div>
+      <div class="stat"><div class="sl">Merma evitada</div><div class="sv" style="color:var(--grn)">$41.200</div><div class="ss">est. precio lista</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">Pedidos activos</div>
+        <div style="display:flex;gap:4px;">
+          <button class="fc on" style="padding:2px 8px;font-size:.68rem;">Todos</button>
+          <button class="fc" style="padding:2px 8px;font-size:.68rem;">Nuevos</button>
+          <button class="fc" style="padding:2px 8px;font-size:.68rem;">Preparando</button>
+          <button class="fc" style="padding:2px 8px;font-size:.68rem;">Listos</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Pedido</th><th>Restaurante</th><th>Hora</th><th>Resumen</th><th>Total</th><th>Entrega</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>#0044</strong></td>
+              <td><strong>La Brasería del Centro</strong><br><span style="font-size:.69rem;color:var(--gray)">011 4422-3311</span></td>
+              <td>10:32</td>
+              <td><span style="font-size:.75rem;">Asado 4kg · Queso 1h · Brócoli 5kg · Medialunas 2</span><br><span style="font-size:.66rem;color:var(--gray);font-style:italic;">Nota: tiras ≤300g</span></td>
+              <td><strong>$22.470</strong></td>
+              <td>🚚 08–09 hs<br><span style="font-size:.68rem;">Corrientes 1540</span></td>
+              <td><span class="sp s-new">Nuevo</span></td>
+              <td>
+                <div style="display:flex;gap:3px;flex-direction:column;">
+                  <button class="btn b-red b-sm">✅ Confirmar</button>
+                  <div style="display:flex;gap:3px;">
+                    <button class="btn b-gray b-sm" onclick="genPDF()">📄 PDF</button>
+                    <button class="btn b-wa b-sm" onclick="openWAModal('ind')">💬 WA</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>#0042</strong></td>
+              <td><strong>La Brasería del Centro</strong><br><span style="font-size:.69rem;color:var(--gray)">011 4422-3311</span></td>
+              <td>09:44</td>
+              <td><span style="font-size:.75rem;">Asado 6kg · Queso 2h</span></td>
+              <td><strong>$25.980</strong></td><td>🚚 08–09 hs</td>
+              <td><span class="sp s-prep">Preparando</span></td>
+              <td>
+                <div style="display:flex;gap:3px;flex-direction:column;">
+                  <button class="btn b-red b-sm">✅ Listo</button>
+                  <div style="display:flex;gap:3px;">
+                    <button class="btn b-gray b-sm" onclick="genPDF()">📄 PDF</button>
+                    <button class="btn b-wa b-sm" onclick="openWAModal('ind')">💬 WA</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>#0041</strong></td>
+              <td><strong>Resto Osaka</strong><br><span style="font-size:.69rem;color:var(--gray)">011 5566-7788</span></td>
+              <td>09:18</td>
+              <td><span style="font-size:.75rem;">Jamón 12 pqt · Manzanas 8kg</span></td>
+              <td><strong>$23.780</strong></td><td>🏪 Retiro 11 hs</td>
+              <td><span class="sp s-ok">Listo p/ retirar</span></td>
+              <td>
+                <div style="display:flex;gap:3px;">
+                  <button class="btn b-gray b-sm" onclick="genPDF()">📄 PDF</button>
+                  <button class="btn b-wa b-sm" onclick="openWAModal('ind')">💬 Avisar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>#0040</strong></td>
+              <td><strong>Parrilla Don Félix</strong><br><span style="font-size:.69rem;color:var(--gray)">011 3344-9900</span></td>
+              <td>08:55</td>
+              <td><span style="font-size:.75rem;">Asado 10kg · Queso 2h</span></td>
+              <td><strong>$35.140</strong></td><td>🚚 Entregado</td>
+              <td><span class="sp s-done">Entregado</span></td>
+              <td><button class="btn b-gray b-sm" onclick="genPDF()">📄 PDF</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /t5 -->
 
-<!-- ═══ MODAL: WHATSAPP (desde Órdenes) ═══════════════ -->
-<div id="modal-wa" class="modal-overlay" onclick="cerrarModalFondo(event,'modal-wa')">
-  <div class="modal" style="max-width:520px;">
-    <div class="modal-header">
-      <div class="modal-title" id="wa-modal-title">💬 Enviar WhatsApp</div>
-      <button class="modal-close" onclick="cerrarModal('modal-wa')">✕</button>
-    </div>
-    <div class="modal-body" id="wa-modal-body">
-      <!-- filled by JS -->
-    </div>
-  </div>
-</div>
+</div><!-- /vt-inner -->
 
 <script>
 const { jsPDF } = window.jspdf;
 
-/* ── NAVIGATION ── */
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.dia-nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-  const map = { ofertas:0, pedido:1, gerente:2, ordenes:3, whatsapp:4, registro:5 };
-  document.querySelectorAll('.dia-nav-tab')[map[id]].classList.add('active');
-  const rb = document.getElementById('role-badge');
-  if (id === 'gerente' || id === 'ordenes') {
-    rb.textContent = 'Gerente'; rb.className = 'role-chip gerente';
-  } else {
-    rb.textContent = 'Restaurante'; rb.className = 'role-chip';
-  }
-}
-
-/* ── DEAL CARDS ── */
-function toggleSelect(card) { card.classList.toggle('selected'); }
-function selectFulfillment(opt) {
-  document.querySelectorAll('.fulfillment-opt').forEach(o => o.classList.remove('selected'));
-  opt.classList.add('selected');
-}
-
-/* ── WA SCREEN TABS ── */
-function switchWATab(tab) {
-  document.querySelectorAll('#screen-whatsapp .inner-tab').forEach((t,i) => {
-    t.classList.toggle('active', (i===0 && tab==='broadcast') || (i===1 && tab==='individual'));
-  });
-  document.getElementById('wa-tab-broadcast').classList.toggle('active', tab==='broadcast');
-  document.getElementById('wa-tab-individual').classList.toggle('active', tab==='individual');
-}
-
-/* ── INDIVIDUAL MSG TYPE ── */
-const msgs = {
-  listo: `✅ *DIA FrescoDía — Pedido #0044 listo*\n\nHola Martín 👋\n\nTu pedido está *listo para despacho* y saldrá en camino hoy entre las *08:00 y 09:00 hs*.\n\n📦 Resumen:\n• Asado de Tira — 4 kg\n• Queso Barra Cremoso — 1 horma\n• Brócoli — 5 kg\n• Medialunas de Grasa — 2 bandejas\n\n💰 Total: $22.470\n📍 Entrega en: Av. Corrientes 1540\n\n_Ante cualquier consulta respondé este mensaje._\n*DIA Sucursal Palermo*`,
-  cambio: `⚠️ *DIA FrescoDía — Cambio en pedido #0044*\n\nHola Martín 👋\n\nQuisimos avisarte que hubo una modificación en tu pedido:\n\n❌ Brócoli (5 kg) — *no disponible hoy*\n✅ Podemos reemplazarlo por Espinaca ($720/kg) o descontar del total\n\n¿Cómo preferís que procedamos?\nA) 🥬 Reemplazar por espinaca\nB) ❌ Eliminar y descontar del total\n\nRespondé A o B y lo resolvemos. Disculpá los inconvenientes.\n*DIA Sucursal Palermo*`
+// ── NAV CONFIG ──────────────────────────────────────────
+const NAV = {
+  r: [
+    {id:'r1', label:'🏷️ Ofertas del Día'},
+    {id:'r2', label:'🛒 Mi Pedido'},
+    {id:'r3', label:'✍️ Registrarme'},
+  ],
+  t: [
+    {id:'t1', label:'📦 Carga del Día'},
+    {id:'t2', label:'📊 Ofertas Publicadas'},
+    {id:'t3', label:'👥 Clientes'},
+    {id:'t4', label:'💬 WhatsApp'},
+    {id:'t5', label:'📋 Órdenes'},
+  ]
 };
 
-function setMsgType(type) {
-  ['listo','cambio'].forEach(t => {
-    document.getElementById('msg-type-'+t).style.border = '2px solid var(--dia-border)';
-    document.getElementById('msg-type-'+t).style.background = 'white';
+let role = 'r';
+let activeScreen = {r:'r1', t:'t1'};
+
+// ── BOOT ────────────────────────────────────────────────
+function enterApp(r) {
+  role = r;
+  document.getElementById('role-selector').classList.add('gone');
+  const app = document.getElementById('app');
+  app.classList.add('on');
+  // inject tienda html
+  document.getElementById('vt').innerHTML = document.getElementById('vt-inner').innerHTML;
+  buildNav(r);
+  showRole(r);
+}
+
+function buildNav(r) {
+  const nav = document.getElementById('tb-nav');
+  nav.innerHTML = NAV[r].map(n =>
+    `<button class="tnav${activeScreen[r]===n.id?' on':''}" onclick="goScreen('${n.id}')">${n.label}</button>`
+  ).join('');
+  document.getElementById('tb-ctx').textContent = r==='r' ? 'La Brasería del Centro' : 'DIA Palermo · Gerente';
+  document.getElementById('tog-r').classList.toggle('on', r==='r');
+  document.getElementById('tog-t').classList.toggle('on', r==='t');
+}
+
+function showRole(r) {
+  document.getElementById('vr').classList.toggle('on', r==='r');
+  document.getElementById('vt').classList.toggle('on', r==='t');
+}
+
+function switchRole(r) {
+  if (r === role) return;
+  role = r;
+  buildNav(r);
+  showRole(r);
+  goScreen(activeScreen[r]);
+}
+
+function goScreen(id) {
+  const prefix = id[0]; // 'r' or 't'
+  const view = document.getElementById(prefix==='r'?'vr':'vt');
+  view.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  const target = view.querySelector('#'+id) || document.getElementById(id);
+  if(target) target.classList.add('on');
+  activeScreen[prefix] = id;
+  // update nav tabs
+  document.querySelectorAll('.tnav').forEach(t => {
+    t.classList.toggle('on', t.getAttribute('onclick').includes(`'${id}'`));
   });
-  document.getElementById('msg-type-'+type).style.border = '2px solid var(--dia-red)';
-  document.getElementById('msg-type-'+type).style.background = 'var(--dia-red-light)';
-  document.getElementById('wa-individual-text').value = msgs[type];
-  // update phone preview
-  const txt = msgs[type].substring(0, 280) + (msgs[type].length > 280 ? '…' : '');
-  document.getElementById('wa-preview-text').textContent = txt;
 }
 
-/* ── CONFIRMATION MODAL ── */
-function abrirConfirmacion() {
-  document.getElementById('paso-proc').classList.add('active');
-  document.getElementById('paso-conf').classList.remove('active');
-  document.getElementById('modal-confirmacion').classList.add('open');
-  setTimeout(() => {
-    document.getElementById('paso-proc').classList.remove('active');
-    document.getElementById('paso-conf').classList.add('active');
-    // reset to email tab
-    switchConfTab('email');
-  }, 1800);
+// Shorthand nav
+function rgo(id){ goScreen(id); }
+function tgo(id){ goScreen(id); }
+
+// ── FILTER / SORT ───────────────────────────────────────
+let activeCat = 'all';
+
+function setCat(btn) {
+  document.querySelectorAll('#catbar .fc').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  activeCat = btn.dataset.cat;
+  applyFilters();
 }
 
-function switchConfTab(tab) {
-  const tabs = ['email','wa-rest','wa-ger','pdf'];
-  tabs.forEach((t,i) => {
-    document.querySelectorAll('#paso-conf .inner-tab')[i].classList.toggle('active', t===tab);
-    document.getElementById('conf-tab-'+t).classList.toggle('active', t===tab);
-  });
-}
+function applyFilters() {
+  const grid = document.getElementById('dgrid');
+  if(!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.dc'));
+  const sort = document.getElementById('sort-sel')?.value || 'dto';
+  const srch = (document.getElementById('srch')?.value || '').toLowerCase().trim();
 
-/* ── WA MODAL FROM ORDENES ── */
-function abrirWAModal(type) {
-  const modal = document.getElementById('modal-wa');
-  const title = document.getElementById('wa-modal-title');
-  const body = document.getElementById('wa-modal-body');
-
-  if (type === 'broadcast') {
-    title.textContent = '📢 Broadcast Diario — Vista Previa';
-    body.innerHTML = `
-      <div class="alert alert-info"><span>ℹ️</span><div>Este mensaje se enviará a los <strong>12 restaurantes registrados</strong> en DIA Palermo.</div></div>
-      <div class="wa-phone" style="max-width:300px;margin:0 auto 16px;">
-        <div class="wa-screen">
-          <div class="wa-topbar-mock">
-            <div class="wa-avatar">🏪</div>
-            <div><div class="wa-contact-name">DIA FrescoDía Palermo</div><div class="wa-contact-sub">en línea</div></div>
-          </div>
-          <div class="wa-messages">
-            <div class="wa-date-sep">Hoy, jueves 27/02</div>
-            <div class="wa-bubble-in">
-              <div class="wa-text">🏪 *DIA FrescoDía — Jueves 27/02*\n📍 Sucursal Palermo\n\n¡Buenos días! Las mejores ofertas de hoy 👇\n\n🥩 *Asado de Tira* — −40% → $2.280/kg\n⚠️ Vence MAÑANA · 18 kg\n\n🥐 *Medialunas* — −50% → $1.200/bdj\n⚠️ Vence MAÑANA · 8 bandejas\n\n🧀 *Queso Cremoso* −25% · 🍎 *Manzanas* −35%\n\n👉 frescodia.dia.com.ar/palermo</div>
-              <div class="wa-time">07:02 ✓✓</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button class="btn btn-wa btn-full">💬 Enviar a 12 restaurantes</button>
-        <button class="btn btn-outline btn-full" onclick="cerrarModal('modal-wa')">Cancelar</button>
-      </div>`;
-  } else {
-    title.textContent = '💬 Notificar restaurante — Pedido #0044';
-    body.innerHTML = `
-      <div class="alert alert-green"><span>✅</span><div>Pedido de <strong>La Brasería del Centro</strong> listo para despacho.</div></div>
-      <div class="wa-phone" style="max-width:300px;margin:0 auto 16px;">
-        <div class="wa-screen">
-          <div class="wa-topbar-mock">
-            <div class="wa-avatar">🏪</div>
-            <div><div class="wa-contact-name">DIA FrescoDía Palermo</div><div class="wa-contact-sub">en línea</div></div>
-          </div>
-          <div class="wa-messages">
-            <div class="wa-date-sep">Hoy, jueves 27/02</div>
-            <div class="wa-bubble-in">
-              <div class="wa-text">✅ *DIA FrescoDía — Pedido #0044 listo*\n\nHola Martín 👋\n\nTu pedido está *listo para despacho* y saldrá entre las *08:00 y 09:00 hs*.\n\n📦 Asado 4kg · Queso 1h\n   Brócoli 5kg · Medialunas 2\n\n💰 $22.470 📍 Corrientes 1540</div>
-              <div class="wa-time">10:48 ✓✓</div>
-            </div>
-            <div class="wa-bubble-out">
-              <div class="wa-text">Gracias! Los esperamos a las 8</div>
-              <div class="wa-time">10:51 ✓</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button class="btn btn-wa btn-full">💬 Enviar a Martín</button>
-        <button class="btn btn-outline btn-full" onclick="cerrarModal('modal-wa')">Cancelar</button>
-      </div>`;
-  }
-  modal.classList.add('open');
-}
-
-/* ── MODAL HELPERS ── */
-function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
-function cerrarModalFondo(e, id) { if(e.target === document.getElementById(id)) cerrarModal(id); }
-
-/* ── PDF GENERATION ── */
-function descargarPDF() {
-  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  const W = 210, M = 16;
-
-  // Red header bar
-  doc.setFillColor(226, 0, 26);
-  doc.rect(0, 0, W, 36, 'F');
-
-  // DIA logo box
-  doc.setFillColor(255,255,255);
-  doc.roundedRect(M, 8, 22, 14, 1, 1, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(13);
-  doc.setTextColor(226,0,26);
-  doc.text('DIA', M+11, 17.5, {align:'center'});
-
-  // Portal name
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(14);
-  doc.setTextColor(255,255,255);
-  doc.text('FrescoDia', M+26, 14);
-  doc.setFontSize(7);
-  doc.setTextColor(255,220,220);
-  doc.text('PORTAL B2B RESTAURANTES', M+26, 19);
-
-  // Order info right
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(14);
-  doc.setTextColor(255,255,255);
-  doc.text('PEDIDO #0044', W-M, 13, {align:'right'});
-  doc.setFontSize(8);
-  doc.setTextColor(255,220,220);
-  doc.text('Jueves 27 de febrero de 2025  -  10:32 hs', W-M, 19, {align:'right'});
-  doc.setFillColor(255,215,0);
-  doc.roundedRect(W-M-28, 22, 28, 8, 1, 1, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-  doc.setTextColor(40,40,40);
-  doc.text('NUEVO', W-M-14, 27.5, {align:'center'});
-
-  let y = 46;
-
-  // Info blocks
-  doc.setFillColor(244,244,244);
-  doc.rect(M, y, 86, 36, 'F');
-  doc.setFillColor(232,245,238);
-  doc.rect(M+90, y, 86, 36, 'F');
-
-  // Left block
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(6.5);
-  doc.setTextColor(120,120,120);
-  doc.text('RESTAURANTE', M+3, y+7);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
-  doc.setTextColor(28,28,28);
-  doc.text('La Braseria del Centro', M+3, y+15);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(74,74,74);
-  doc.text('Martin Gonzalez', M+3, y+22);
-  doc.text('011 4422-3311', M+3, y+28);
-  doc.text('martin@labraseriadel.com.ar', M+3, y+33);
-
-  // Right block
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(6.5);
-  doc.setTextColor(26,122,60);
-  doc.text('ENTREGA', M+93, y+7);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
-  doc.setTextColor(28,28,28);
-  doc.text('Delivery - Domicilio', M+93, y+15);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(74,74,74);
-  doc.text('Viernes 28 de febrero de 2025', M+93, y+22);
-  doc.text('08:00 a 09:00 hs', M+93, y+28);
-  doc.text('Av. Corrientes 1540, CABA', M+93, y+33);
-
-  y += 44;
-
-  // Products
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(8);
-  doc.setTextColor(28,28,28);
-  doc.text('DETALLE DE PRODUCTOS', M, y);
-  y += 4;
-
-  doc.autoTable({
-    startY: y,
-    margin: { left:M, right:M },
-    head: [['Producto','Cat.','Vence en','Cant.','P. Lista','Dto.','P. Oferta','Subtotal']],
-    body: [
-      ['Asado de Tira','Carnes','1 dia','4 kg','$3.800','-40%','$2.280','$9.120'],
-      ['Queso Barra Cremoso','Lacteos','2 dias','1 horma','$8.200','-25%','$6.150','$6.150'],
-      ['Brocoli (*)','F. y Verd.','3 dias','5 kg','$1.200','-30%','$840','$4.200'],
-      ['Medialunas de Grasa','Panaderia','1 dia','2 bandejas','$2.400','-50%','$1.200','$2.400'],
-    ],
-    headStyles: { fillColor:[226,0,26], textColor:255, fontSize:7, fontStyle:'bold', halign:'center' },
-    bodyStyles: { fontSize:8, halign:'center' },
-    columnStyles: { 0:{halign:'left'}, 1:{halign:'left'} },
-    alternateRowStyles: { fillColor:[250,250,250] },
-    theme:'grid',
+  cards.forEach(c => {
+    const catOk = activeCat === 'all' || c.dataset.cat === activeCat;
+    const srchOk = !srch || c.dataset.n.includes(srch);
+    c.style.display = (catOk && srchOk) ? '' : 'none';
   });
 
-  y = doc.lastAutoTable.finalY + 8;
+  const vis = cards.filter(c => c.style.display !== 'none');
+  vis.sort((a,b) => {
+    if(sort==='dto') return +b.dataset.d - +a.dataset.d;
+    if(sort==='vto') return +a.dataset.v - +b.dataset.v;
+    if(sort==='cat') return a.dataset.cat.localeCompare(b.dataset.cat);
+    return 0;
+  });
+  vis.forEach(c => grid.appendChild(c));
+  cards.filter(c=>c.style.display==='none').forEach(c=>grid.appendChild(c));
 
-  // Totals
-  doc.setFillColor(244,244,244);
-  doc.rect(W-M-72, y, 72, 46, 'F');
-  doc.setFillColor(226,0,26);
-  doc.rect(W-M-72, y, 72, 8, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-  doc.setTextColor(255,255,255);
-  doc.text('RESUMEN DE PAGO', W-M-36, y+5.5, {align:'center'});
-
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(74,74,74);
-  doc.text('Subtotal:', W-M-68, y+16); doc.text('$21.870', W-M-4, y+16, {align:'right'});
-  doc.text('Delivery:', W-M-68, y+23); doc.text('$600', W-M-4, y+23, {align:'right'});
-  doc.setFont('helvetica','bold');
-  doc.setTextColor(26,122,60);
-  doc.text('Ahorro total:', W-M-68, y+30); doc.text('-$9.430', W-M-4, y+30, {align:'right'});
-  doc.setDrawColor(226,0,26);
-  doc.setLineWidth(0.6);
-  doc.line(W-M-68, y+33, W-M-4, y+33);
-  doc.setFontSize(11);
-  doc.setTextColor(226,0,26);
-  doc.text('TOTAL:', W-M-68, y+41);
-  doc.text('$22.470', W-M-4, y+41, {align:'right'});
-
-  // Notes
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(8);
-  doc.setTextColor(28,28,28);
-  doc.text('NOTAS DEL RESTAURANTE:', M, y+10);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(74,74,74);
-  doc.text('(*) Brocoli con manchas menores - apto para coccion.', M, y+18);
-  doc.text('Asado de Tira en porciones no mayor a 300g c/u.', M, y+25);
-
-  // Footer
-  doc.setFillColor(226,0,26);
-  doc.rect(0, 278, W, 19, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-  doc.setTextColor(255,255,255);
-  doc.text('DIA FrescoDia  |  Sucursal Palermo  |  compras.frescodia@dia.com.ar', M, 286);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(6.5);
-  doc.setTextColor(255,200,200);
-  doc.text('Precios con descuento por proximidad de vencimiento. Fecha limite de consumo segun etiqueta original. Documento valido como orden de preparacion y despacho.', M, 292);
-
-  doc.save('pedido_0044_DIA_FrescoDia_20250227.pdf');
+  let em = grid.querySelector('.empty-msg');
+  if(vis.length===0){
+    if(!em){em=document.createElement('div');em.className='empty-msg';em.style.cssText='grid-column:1/-1;text-align:center;padding:36px;color:#aaa;font-size:.87rem;';em.textContent='No hay productos que coincidan.';grid.appendChild(em);}
+  } else { if(em) em.remove(); }
 }
 
-/* ── QTY / FILTER EVENTS ── */
-document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('qty-btn')) {
-    const ctrl = e.target.closest('.qty-ctrl');
-    const val = ctrl.querySelector('.qty-val');
+// ── DEAL CARDS ──────────────────────────────────────────
+function toggleSel(c) { c.classList.toggle('sel'); }
+
+// ── FULFILLMENT ─────────────────────────────────────────
+function selFF(el) {
+  el.closest('.ffg').querySelectorAll('.ffo').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── QTY BUTTONS ─────────────────────────────────────────
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('qb')){
+    const ctrl = e.target.closest('.qc');
+    const val = ctrl.querySelector('.qv');
     let v = parseInt(val.textContent);
-    if (e.target.textContent === '+') v++;
-    else if (v > 0) v--;
+    if(e.target.textContent==='+') v++;
+    else if(v>0) v--;
     val.textContent = v;
     e.stopPropagation();
   }
-  if (e.target.classList.contains('filter-chip')) {
-    const container = e.target.closest('.filter-bar') || e.target.closest('.card-header');
-    if (container) container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    e.target.classList.add('active');
+  if(e.target.classList.contains('fc') && !e.target.closest('#catbar')){
+    const hdr = e.target.closest('.card-h');
+    if(hdr) hdr.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));
+    e.target.classList.add('on');
   }
 });
+
+// ── CONFIRM MODAL ───────────────────────────────────────
+function openConfirm() {
+  document.getElementById('m-proc').classList.add('on');
+  document.getElementById('m-done').classList.remove('on');
+  document.getElementById('m-confirm').classList.add('on');
+  setTimeout(()=>{
+    document.getElementById('m-proc').classList.remove('on');
+    document.getElementById('m-done').classList.add('on');
+    confTab('email');
+  }, 1800);
+}
+
+function confTab(t) {
+  const tabs=['email','war','wag','pdf'];
+  document.querySelectorAll('#m-done .itab').forEach((el,i)=>el.classList.toggle('on',tabs[i]===t));
+  tabs.forEach(tab => {
+    const p = document.getElementById('ct-'+tab);
+    if(p) p.classList.toggle('on', tab===t);
+  });
+}
+
+// ── WA TABS ─────────────────────────────────────────────
+function waTab(t) {
+  const tabs = document.querySelectorAll('#wa-tabs .itab');
+  tabs[0].classList.toggle('on', t==='bc');
+  tabs[1].classList.toggle('on', t==='ind');
+  document.getElementById('wa-bc').classList.toggle('on', t==='bc');
+  document.getElementById('wa-ind').classList.toggle('on', t==='ind');
+}
+
+// ── WA INDIVIDUAL MSG TYPE ──────────────────────────────
+const waMsg = {
+  ok:`✅ *DIA FrescoDía — Pedido #0044 listo*\n\nHola Martín 👋\n\nTu pedido está *listo para despacho* y saldrá entre las *08:00 y 09:00 hs*.\n\n📦 Asado 4kg · Queso 1h\n   Brócoli 5kg · Medialunas 2\n\n💰 Total: $22.470\n📍 Corrientes 1540\n\n_Respondé si tenés consultas._\n*DIA Sucursal Palermo*`,
+  chg:`⚠️ *DIA FrescoDía — Cambio en pedido #0044*\n\nHola Martín 👋\n\nHubo una modificación en tu pedido:\n\n❌ Brócoli (5 kg) — *no disponible hoy*\n✅ Podemos reemplazar por Espinaca ($720/kg)\n\n¿Cómo procedemos?\nA) 🥬 Reemplazar por espinaca\nB) ❌ Eliminar y descontar del total\n\nRespondé A o B y lo resolvemos.\n*DIA Sucursal Palermo*`
+};
+
+function setMT(t) {
+  ['ok','chg'].forEach(k=>{
+    const el=document.getElementById('mt-'+k);
+    if(el){el.style.border=`2px solid ${k===t?'var(--red)':'var(--gmd)'}`;el.style.background=k===t?'var(--red-light)':'#fff';}
+  });
+  const txt=document.getElementById('wa-ind-txt');
+  if(txt) txt.value=waMsg[t];
+  const prev=document.getElementById('wa-ind-prev-txt');
+  if(prev) prev.textContent=waMsg[t].substring(0,220)+(waMsg[t].length>220?'…':'');
+}
+
+// ── WA MODAL (from Órdenes) ─────────────────────────────
+function openWAModal(type) {
+  const m=document.getElementById('m-wa');
+  document.getElementById('m-wa-title').textContent = type==='bc'?'📢 Broadcast Diario — Vista Previa':'💬 Notificar Restaurante — #0044';
+  document.getElementById('m-wa-body').innerHTML = type==='bc' ? `
+    <div class="al a-inf"><span>ℹ️</span><div>Mensaje que se enviará a los <strong>12 restaurantes activos</strong> de DIA Palermo.</div></div>
+    <div class="wap" style="max-width:280px;margin:0 auto 14px;">
+      <div class="was"><div class="watb"><div class="waav">🏪</div><div><div class="wan">DIA FrescoDía Palermo</div><div class="was2">en línea</div></div></div>
+        <div class="wams"><div class="wads">Hoy 27/02</div>
+          <div class="wab"><div class="watxt">🏪 *DIA FrescoDía — 27/02*\n\n¡Buenos días! Ofertas de hoy 👇\n\n🥩 Asado −40% → $2.280/kg\n⚠️ Vence MAÑANA · 18 kg\n\n🥐 Medialunas −50% → $1.200\n⚠️ Vence MAÑANA · 8 bdj\n\n🧀 Queso −25% · 🍎 Manzanas −35%\n\n👉 frescodia.dia.com.ar</div><div class="watm">07:02 ✓✓</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+      <button class="btn b-wa b-full">💬 Enviar a 12 restaurantes</button>
+      <button class="btn b-out b-full" onclick="closeMdl('m-wa')">Cancelar</button>
+    </div>` : `
+    <div class="al a-grn"><span>✅</span><div>Pedido de <strong>La Brasería del Centro</strong> listo para despacho.</div></div>
+    <div class="wap" style="max-width:280px;margin:0 auto 14px;">
+      <div class="was"><div class="watb"><div class="waav">🏪</div><div><div class="wan">DIA FrescoDía Palermo</div><div class="was2">en línea</div></div></div>
+        <div class="wams"><div class="wads">Hoy 27/02</div>
+          <div class="wab"><div class="watxt">✅ *Pedido #0044 listo*\n\nHola Martín 👋\n\nListo para despacho entre las *08:00 y 09:00 hs*.\n\n📦 Asado 4kg · Queso 1h\n💰 $22.470 📍 Corrientes 1540</div><div class="watm">10:48 ✓✓</div></div>
+          <div class="wabo"><div class="watxt">Gracias! Los esperamos a las 8</div><div class="watm">10:51 ✓</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+      <button class="btn b-wa b-full">💬 Enviar a Martín</button>
+      <button class="btn b-out b-full" onclick="closeMdl('m-wa')">Cancelar</button>
+    </div>`;
+  m.classList.add('on');
+}
+
+// ── MODAL HELPERS ───────────────────────────────────────
+function closeMdl(id){ document.getElementById(id).classList.remove('on'); }
+function closeMO(e,id){ if(e.target===document.getElementById(id)) closeMdl(id); }
+
+// ── PDF ─────────────────────────────────────────────────
+function genPDF(){
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,M=15;
+  doc.setFillColor(226,0,26);doc.rect(0,0,W,34,'F');
+  doc.setFillColor(255,255,255);doc.roundedRect(M,7,20,13,1,1,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(226,0,26);
+  doc.text('DIA',M+10,15.5,{align:'center'});
+  doc.setFontSize(13);doc.setTextColor(255,255,255);
+  doc.text('FrescoDia',M+24,14);
+  doc.setFontSize(6.5);doc.setTextColor(255,200,200);
+  doc.text('PORTAL B2B RESTAURANTES',M+24,19);
+  doc.setFontSize(13);doc.setTextColor(255,255,255);
+  doc.text('PEDIDO #0044',W-M,12,{align:'right'});
+  doc.setFontSize(7.5);doc.setTextColor(255,200,200);
+  doc.text('Jueves 27 de febrero de 2025  ·  10:32 hs',W-M,18,{align:'right'});
+  doc.setFillColor(255,215,0);doc.roundedRect(W-M-26,21,26,7,1,1,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(40,40,40);
+  doc.text('NUEVO',W-M-13,25.5,{align:'center'});
+
+  let y=43;
+  doc.setFillColor(244,244,244);doc.rect(M,y,85,34,'F');
+  doc.setFillColor(232,245,238);doc.rect(M+88,y,85,34,'F');
+
+  doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(120,120,120);
+  doc.text('RESTAURANTE',M+2,y+6);
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(28,28,28);
+  doc.text('La Braseria del Centro',M+2,y+13);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(74,74,74);
+  doc.text('Martin Gonzalez',M+2,y+19);
+  doc.text('011 4422-3311',M+2,y+24);
+  doc.text('martin@labraseriadel.com.ar',M+2,y+29);
+
+  doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(26,122,60);
+  doc.text('ENTREGA',M+90,y+6);
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(28,28,28);
+  doc.text('Delivery · Domicilio',M+90,y+13);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(74,74,74);
+  doc.text('Viernes 28 de febrero de 2025',M+90,y+19);
+  doc.text('08:00 a 09:00 hs',M+90,y+24);
+  doc.text('Av. Corrientes 1540, CABA',M+90,y+29);
+
+  y+=41;
+  doc.autoTable({
+    startY:y,margin:{left:M,right:M},
+    head:[['Producto','Cat.','Vence','Cant.','P.Lista','Dto.','P.Oferta','Subtotal']],
+    body:[
+      ['Asado de Tira','Carnes','1 dia','4 kg','$3.800','-40%','$2.280','$9.120'],
+      ['Queso Barra Cremoso','Lacteos','2 dias','1 horma','$8.200','-25%','$6.150','$6.150'],
+      ['Brocoli (*)','F.y Verd.','3 dias','5 kg','$1.200','-30%','$840','$4.200'],
+      ['Medialunas de Grasa','Panaderia','1 dia','2 bandejas','$2.400','-50%','$1.200','$2.400'],
+    ],
+    headStyles:{fillColor:[226,0,26],textColor:255,fontSize:6.5,fontStyle:'bold',halign:'center'},
+    bodyStyles:{fontSize:7.5,halign:'center'},
+    columnStyles:{0:{halign:'left'},1:{halign:'left'}},
+    alternateRowStyles:{fillColor:[250,250,250]},theme:'grid',
+  });
+
+  y=doc.lastAutoTable.finalY+7;
+  doc.setFillColor(244,244,244);doc.rect(W-M-70,y,70,44,'F');
+  doc.setFillColor(226,0,26);doc.rect(W-M-70,y,70,7,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(255,255,255);
+  doc.text('RESUMEN',W-M-35,y+5,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(74,74,74);
+  doc.text('Subtotal:',W-M-66,y+14);doc.text('$21.870',W-M-4,y+14,{align:'right'});
+  doc.text('Delivery:',W-M-66,y+21);doc.text('$600',W-M-4,y+21,{align:'right'});
+  doc.setFont('helvetica','bold');doc.setTextColor(26,122,60);
+  doc.text('Ahorro total:',W-M-66,y+28);doc.text('-$9.430',W-M-4,y+28,{align:'right'});
+  doc.setDrawColor(226,0,26);doc.setLineWidth(.5);doc.line(W-M-66,y+31,W-M-4,y+31);
+  doc.setFontSize(10);doc.setTextColor(226,0,26);
+  doc.text('TOTAL:',W-M-66,y+39);doc.text('$22.470',W-M-4,y+39,{align:'right'});
+
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(28,28,28);
+  doc.text('NOTAS:',M,y+10);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(74,74,74);
+  doc.text('(*) Brocoli con manchas menores - apto coccion.',M,y+17);
+  doc.text('Asado en porciones no mayores a 300g.',M,y+23);
+
+  doc.setFillColor(226,0,26);doc.rect(0,277,W,20,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(255,255,255);
+  doc.text('DIA FrescoDia  |  Sucursal Palermo  |  compras.frescodia@dia.com.ar',M,284);
+  doc.setFont('helvetica','normal');doc.setFontSize(6);doc.setTextColor(255,200,200);
+  doc.text('Precios con descuento por proximidad de vencimiento. Fecha limite segun etiqueta original. Documento valido como orden de preparacion.',M,290);
+
+  doc.save('pedido_0044_DIA_FrescoDia.pdf');
+}
 </script>
+
 </body>
 </html>
