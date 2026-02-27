@@ -250,14 +250,81 @@ tr:hover td{background:#fafafa;}
 .spin{width:38px;height:38px;border:4px solid var(--gmd);border-top-color:var(--red);border-radius:50%;animation:rot .8s linear infinite;margin:0 auto 12px;}
 @keyframes rot{to{transform:rotate(360deg);}}
 
-@media(max-width:768px){
-  .split{grid-template-columns:1fr;}
+/* ══ RESPONSIVE ══════════════════════════════════ */
+
+/* Tablet <=900px */
+@media(max-width:900px){
   .stats{grid-template-columns:1fr 1fr;}
-  .g2,.g3{grid-template-columns:1fr;}
-  .dgrid{grid-template-columns:1fr 1fr;}
   .iw{grid-template-columns:1fr 1fr;}
-  .screen{padding:12px;}
-  .role-cards{flex-direction:column;}
+  .dgrid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}
+}
+
+/* Mobile <=640px */
+@media(max-width:640px){
+  .tb{height:auto;flex-wrap:wrap;min-height:50px;}
+  .tb-logo{padding:0 12px;height:50px;}
+  .tb-tog{padding:0 8px;border-right:none;height:50px;}
+  .tog-btn{font-size:.68rem;padding:4px 10px;}
+  .tb-nav{order:3;width:100%;padding:0;border-top:1px solid rgba(255,255,255,.1);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .tb-nav::-webkit-scrollbar{display:none;}
+  .tnav{padding:0 14px;font-size:.72rem;height:38px;flex-shrink:0;}
+  .tb-ctx{display:none;}
+  .role-cards{flex-direction:column;gap:3px;width:100%;max-width:320px;}
+  .rcard{width:100%;padding:20px 18px;display:flex;align-items:center;gap:14px;text-align:left;}
+  .rcard-icon{font-size:2rem;flex-shrink:0;margin-bottom:0;}
+  .rcard-name{font-size:1.05rem;}
+  .sel-brand,.sel-dia{font-size:1.65rem;}
+  .sel-tag{font-size:.7rem;}
+  .screen{padding:11px 10px;}
+  .pnote{font-size:.67rem;padding:5px 9px;}
+  .phdr{flex-direction:column;gap:7px;align-items:flex-start;padding:10px 12px;}
+  .ptitle{font-size:1.15rem;}
+  .psub{font-size:.72rem;}
+  .split{grid-template-columns:1fr;}
+  .g2,.g3{grid-template-columns:1fr;}
+  .stats{grid-template-columns:1fr 1fr;}
+  .iw{grid-template-columns:1fr 1fr;}
+  .ffg{grid-template-columns:1fr 1fr;}
+  .dgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;}
+  .dimg{height:88px;font-size:2rem;}
+  .dbody{padding:8px;}
+  .dname{font-size:.88rem;}
+  .ddesc{font-size:.64rem;}
+  .dpo{font-size:.98rem;}
+  .cart{position:static;margin-top:12px;}
+  .fbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none;}
+  .fbar::-webkit-scrollbar{display:none;}
+  .fc{flex-shrink:0;font-size:.67rem;padding:4px 9px;}
+  #srch{min-width:130px;margin-left:0!important;}
+  .sv{font-size:1.4rem;}
+  .sl{font-size:.59rem;}
+  .ic{padding:10px 11px;}
+  .iv{font-size:1.25rem;}
+  .il{font-size:.57rem;}
+  th{padding:5px 8px;font-size:.61rem;}
+  td{padding:6px 8px;}
+  .mo{padding:0;align-items:flex-end;}
+  .mdl{max-width:100%;width:100%;max-height:92vh;border-radius:16px 16px 0 0;}
+  .itabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .itabs::-webkit-scrollbar{display:none;}
+  .itab{flex-shrink:0;font-size:.69rem;padding:7px 10px;}
+  .wap{max-width:215px;}
+  .watxt{font-size:.64rem;}
+  .btn{font-size:.77rem;padding:7px 12px;}
+  .b-sm{padding:4px 8px;font-size:.69rem;}
+  .rsteps{font-size:.63rem;}
+  .rsn{font-size:.92rem;}
+  [data-twocol]{grid-template-columns:1fr!important;}
+  #r1.screen{padding-bottom:68px;}
+  #r2.screen{padding-bottom:68px;}
+  .mob-bar{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid var(--red);padding:10px 14px;gap:9px;z-index:300;box-shadow:0 -3px 14px rgba(0,0,0,.13);}
+  .mob-bar.hide{display:none;}
+}
+
+/* Very small <=380px */
+@media(max-width:380px){
+  .dgrid{grid-template-columns:1fr 1fr;}
+  .tog-btn{font-size:.61rem;padding:4px 6px;}
 }
 </style>
 </head>
@@ -593,9 +660,9 @@ tr:hover td{background:#fafafa;}
           <div id="ct-email" class="ipane on">
             <div class="ep">
               <div class="eph">
-                <div><strong>Para:</strong> compras.palermo@dia.com.ar &nbsp;·&nbsp; <em>Carlos M. (Gerente)</em></div>
+                <div><strong>Para:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bad9d5d7cac8dbc994cadbd6dfc8d7d5faded3db94d9d5d794dbc8">[email&#160;protected]</a> &nbsp;·&nbsp; <em>Carlos M. (Gerente)</em></div>
                 <div><strong>Asunto:</strong> 🛒 Nuevo pedido FrescoDía #0044 — La Brasería del Centro</div>
-                <div><strong>CC:</strong> martin@labraseriadel.com.ar</div>
+                <div><strong>CC:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84e9e5f6f0edeac4e8e5e6f6e5f7e1f6ede5e0e1e8aae7ebe9aae5f6">[email&#160;protected]</a></div>
                 <div><strong>Adjunto:</strong> 📄 <span style="color:var(--red);font-weight:600;">pedido_0044_braseria.pdf</span></div>
               </div>
               <div class="epb">
@@ -866,7 +933,7 @@ tr:hover td{background:#fafafa;}
     </div>
     <!-- BROADCAST -->
     <div id="wa-bc" class="ipane on">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
+      <div data-twocol style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
         <div>
           <div class="card">
             <div class="card-h"><div class="card-t">📢 Mensaje del Día</div></div>
@@ -933,7 +1000,7 @@ _Válido solo hoy. Precios con IVA._</textarea>
     </div><!-- /wa-bc -->
     <!-- INDIVIDUAL -->
     <div id="wa-ind" class="ipane">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
+      <div data-twocol style="display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start;">
         <div>
           <div class="card">
             <div class="card-h"><div class="card-t">👤 Notificación Individual</div></div>
@@ -1095,7 +1162,7 @@ Listo para despacho entre las *08:00 y 09:00 hs*.
 
 </div><!-- /vt-inner -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const { jsPDF } = window.jspdf;
 
 // ── NAV CONFIG ──────────────────────────────────────────
@@ -1276,15 +1343,7 @@ function setMT(t) {
     const el=document.getElementById('mt-'+k);
     if(el){el.style.border=`2px solid ${k===t?'var(--red)':'var(--gmd)'}`;el.style.background=k===t?'var(--red-light)':'#fff';}
   });
-  const txt=document.getElementById('wa-ind-txt');
-  if(txt) txt.value=waMsg[t];
-  const prev=document.getElementById('wa-ind-prev-txt');
-  if(prev) prev.textContent=waMsg[t].substring(0,220)+(waMsg[t].length>220?'…':'');
-}
-
-// ── WA MODAL (from Órdenes) ─────────────────────────────
-function openWAModal(type) {
-  const m=document.getElementById('m-wa');
+  const txt=document.getEleent.getElementById('m-wa');
   document.getElementById('m-wa-title').textContent = type==='bc'?'📢 Broadcast Diario — Vista Previa':'💬 Notificar Restaurante — #0044';
   document.getElementById('m-wa-body').innerHTML = type==='bc' ? `
     <div class="al a-inf"><span>ℹ️</span><div>Mensaje que se enviará a los <strong>12 restaurantes activos</strong> de DIA Palermo.</div></div>
@@ -1405,7 +1464,41 @@ function genPDF(){
 
   doc.save('pedido_0044_DIA_FrescoDia.pdf');
 }
+
+// ── MOBILE STICKY BAR ────────────────────────────────────
+function updateMobBar() {
+  var bar = document.getElementById('mob-bar');
+  if (!bar) return;
+  var onR1 = document.getElementById('r1') && document.getElementById('r1').classList.contains('on');
+  var mobile = window.innerWidth <= 640;
+  if (!mobile || !onR1) { bar.classList.add('hide'); return; }
+  var cards = document.querySelectorAll('#dgrid .dc.sel');
+  var count = 0;
+  cards.forEach(function(c) {
+    var q = c.querySelector('.qv');
+    count += q ? (parseInt(q.textContent) || 1) : 1;
+  });
+  if (count === 0) { bar.classList.add('hide'); return; }
+  bar.classList.remove('hide');
+  document.getElementById('mob-bar-items').textContent = count + (count === 1 ? ' producto seleccionado' : ' productos seleccionados');
+  document.getElementById('mob-bar-total').textContent = 'Ver resumen →';
+}
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('qb') || e.target.closest && e.target.closest('.dc')) {
+    setTimeout(updateMobBar, 60);
+  }
+});
+window.addEventListener('resize', updateMobBar);
 </script>
 
+
+<!-- MOBILE STICKY BAR (Restaurante view) -->
+<div id="mob-bar" class="mob-bar hide">
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:.7rem;color:var(--gray);font-weight:600;" id="mob-bar-items">0 productos</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:var(--red);" id="mob-bar-total"></div>
+  </div>
+  <button class="btn b-red" style="padding:10px 18px;font-size:.84rem;flex-shrink:0;" onclick="rgo('r2')">Ver pedido →</button>
+</div>
 </body>
 </html>
